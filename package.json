@@ -1,0 +1,17 @@
+{
+  "name": "node-app",
+  "description": "Nodeapp for CICD test",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "3.12.0"
+  },
+  "devDependencies": {
+    "mocha": "1.20.1",
+    "supertest": "0.13.0"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "./node_modules/.bin/mocha ./test/test.js"
+  }
+}

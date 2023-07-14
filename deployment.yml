@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nodeapp-deployment
+  name: nodeapp-deployment-
   labels:
     app: nodeapp
 spec:
@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: nodeserver
-        image: thetips4you/nodeapp:latest
+        image: sathiyan97/nodeapp:latest
         ports:
         - containerPort: 3000

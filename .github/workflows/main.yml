@@ -20,12 +20,12 @@ jobs:
       
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v1
+        uses: docker/metadata-action@v4
         with:
           images: ahsanulhabib1993/testjodejsapp
       
       - name: Build and push Docker image
-        uses: docker/build-push-action@v1
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: true

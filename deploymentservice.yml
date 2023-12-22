@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: nodeserver
-        image: thetips4you/nodeapp:latest
+        image: us-central1-docker.pkg.dev/invertible-hook-406706/test-gcp/nodeapp:latest
         ports:
         - containerPort: 3000
         
@@ -33,6 +33,6 @@ spec:
   type: LoadBalancer
   ports:
   - protocol: TCP
-    port: 5000
+    port: 8000
     targetPort: 3000
     nodePort: 31110

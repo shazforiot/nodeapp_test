@@ -45,3 +45,10 @@ jobs:
         gcloud auth configure-docker us-central1-docker.pkg.dev
         docker build -t us-central1-docker.pkg.dev/invertible-hook-406706/test-gcp/code:latest .
         docker push us-central1-docker.pkg.dev/invertible-hook-406706/test-gcp/code:latest
+    - name: deploy to gke
+      env:
+        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+      run: |
+        gcloud container clusters get-credentials cluster-1 --region us-central1-c
+        sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" deploymentservice.yml
+        kubectl apply -f deploymentservice.yml

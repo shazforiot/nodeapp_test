@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: nodeserver
-        image: us-central1-docker.pkg.dev/invertible-hook-406706/test-gcp/nodeapp:latest
+        image: asia-south1-docker.pkg.dev/goldengate-1/test-project/code:latest
         ports:
         - containerPort: 3000
         

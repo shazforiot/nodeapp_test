@@ -43,8 +43,8 @@ jobs:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
       run: |
         gcloud auth configure-docker us-central1-docker.pkg.dev
-        docker build -t us-central1-docker.pkg.dev/invertible-hook-406706/test-gcp/code:latest .
-        docker push us-central1-docker.pkg.dev/invertible-hook-406706/test-gcp/code:latest
+        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/code/node:latest .
+        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
     - name: deploy to gke
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}

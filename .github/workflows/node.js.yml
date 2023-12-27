@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
@@ -34,7 +34,6 @@ jobs:
       uses: google-github-actions/setup-gcloud@v0
       with:
         project_id: ${{ secrets.GOOGLE_PROJECT }}
-        service_account: '${{ vars.SERVICE_ACCOUNT_EMAIL }}'
         service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         install_components: 'gke-gcloud-auth-plugin'
         export_default_credentials: true

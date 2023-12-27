@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -49,6 +49,6 @@ jobs:
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
       run: |
-        gcloud container clusters get-credentials test-cluster --region asia-south1-c-c
+        gcloud container clusters get-credentials test-cluster --region asia-south1-c
         sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" deploymentservice.yml
         kubectl apply -f deploymentservice.yml

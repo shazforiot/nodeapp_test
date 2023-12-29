@@ -47,4 +47,11 @@ jobs:
         gcloud auth configure-docker us-central1-docker.pkg.dev
         docker build -t us-central1-docker.pkg.dev/invertible-hook-406706/test-gcp/node:latest .
         docker push us-central1-docker.pkg.dev/invertible-hook-406706/test-gcp/node:latest
+    - name: deploy to gke
+      env:
+        PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      run: |
+        gcloud container clusters get-credentials cluster-1 --region us-central1-c
+        sed -i "s/PROJECT_ID/$PROJECT_ID/g" deploymentservice.yml
+        kubectl apply -f deploymentservice.yml
   

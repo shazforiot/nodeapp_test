@@ -1,4 +1,4 @@
-FROM nodeapp:v1
+FROM node:latest
 
 WORKDIR /usr/src/app
 

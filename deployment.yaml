@@ -19,20 +19,3 @@ spec:
         image: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
         ports:
         - containerPort: 3000
-        
-        
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: nodeapp-service
-spec:
-  selector:
-    app: nodeapp 
-  type: LoadBalancer
-  ports:
-  - protocol: TCP
-    port: 8000
-    targetPort: 3000
-    nodePort: 31111

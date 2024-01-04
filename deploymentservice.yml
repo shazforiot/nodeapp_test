@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: nodeserver
-        image: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+        image: us-central1-docker.pkg.dev/goldengate-1/test-project/nodeapp:v1
         ports:
         - containerPort: 3000
         

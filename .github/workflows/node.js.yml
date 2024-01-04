@@ -50,7 +50,8 @@ jobs:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
       run: |
         gcloud container clusters get-credentials test-cluster --region asia-south1-c
-        sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" deploymentservice.yml
-        kubectl delete -f deploymentservice.yml
-        kubectl apply -f deploymentservice.yml
+        sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" deployment.yaml/service.yaml
+        kubectl delete -f deployment.yml
+        kubectl apply -f deployment.yml
+        kubectl apply -f service.yml
 

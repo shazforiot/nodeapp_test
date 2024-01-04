@@ -51,6 +51,5 @@ jobs:
       run: |
         gcloud container clusters get-credentials test-cluster --region asia-south1-c
         sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" deploymentservice.yml
-        kubectl delete -f deploymentservice.yml
         kubectl apply -f deploymentservice.yml
 

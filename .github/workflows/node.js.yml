@@ -52,6 +52,7 @@ jobs:
         gcloud container clusters get-credentials test-cluster --region asia-south1-c
         sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" deployment.yaml
         sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" service.yaml
+        kubectl delete -f deployment.yaml
         kubectl apply -f deployment.yaml
         kubectl apply -f service.yaml
 

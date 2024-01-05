@@ -20,3 +20,5 @@ spec:
         ports:
         - containerPort: 3000
         imagePullPolicy: Always  # Always pull the latest image
+    strategy:
+      type: RollingUpdate

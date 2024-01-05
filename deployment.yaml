@@ -13,12 +13,10 @@ spec:
     metadata:
       labels:
         app: nodeapp
-    spec:
+   spec:
       containers:
       - name: nodeserver
         image: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
-        imagePullPolicy: Always  # Always pull the latest image
-  strategy:
-  type: Recreate

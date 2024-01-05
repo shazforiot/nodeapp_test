@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nodeapp
 spec:
-  replicas: 3  # Adjust the number based on your needs
+  replicas: 3
   selector:
     matchLabels:
       app: nodeapp
@@ -19,9 +19,6 @@ spec:
         image: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
         ports:
         - containerPort: 3000
-        imagePullPolicy: Always
+        imagePullPolicy: Always  # Always pull the latest image
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+    type: Recreate  # Use the Recreate strategy

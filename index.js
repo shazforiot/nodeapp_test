@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 
 app.get('/', function (req, res) {
-    res.send('{ "response": "Welcome to TEST-GCP PROJECT " }');
+    res.send('{ "response": "Welcome to Git-Hub Actions CI/CD Workflow " }');
 });
 
 app.get('/will', function (req, res) {

@@ -12,11 +12,11 @@ spec:
   template:
     metadata:
       labels:
-        app: nodeapp 
+        app: nodeapp
     spec:
       containers:
       - name: nodeserver
         image: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
         ports:
         - containerPort: 3000
-         imagePullPolicy: Always 
+        imagePullPolicy: Always  # Always pull the latest image

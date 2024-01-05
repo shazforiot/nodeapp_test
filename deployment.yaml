@@ -19,3 +19,4 @@ spec:
         image: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
         ports:
         - containerPort: 3000
+         imagePullPolicy: Always 

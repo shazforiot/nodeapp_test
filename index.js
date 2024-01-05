@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 
 app.get('/', function (req, res) {
-    res.send('{ "response": "Welcome to TIRUPATI " }');
+    res.send('{ "response": "Welcome to INNODATA INDIA PVT.LTD " }');
 });
 
 app.get('/will', function (req, res) {

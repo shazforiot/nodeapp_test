@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 
 app.get('/', function (req, res) {
-    res.send('{ "response": "Welcome to INNODATA-TECH " }');
+    res.send('{ "response": "Welcome to Innodata-tech-org " }');
 });
 
 app.get('/will', function (req, res) {

@@ -17,6 +17,11 @@ spec:
       containers:
       - name: nodeserver
         image: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-        imagePullPolicy: Always
         ports:
         - containerPort: 3000
+        imagePullPolicy: Always
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1

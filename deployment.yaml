@@ -5,7 +5,7 @@ metadata:
   labels:
     app: nodeapp
 spec:
-  replicas: 1
+  replicas: 1  # Adjust the number based on your needs
   selector:
     matchLabels:
       app: nodeapp
@@ -20,3 +20,5 @@ spec:
         ports:
         - containerPort: 3000
         imagePullPolicy: Always  # Always pull the latest image
+  strategy:
+    type: RollingUpdate  # 

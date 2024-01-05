@@ -21,7 +21,4 @@ spec:
         - containerPort: 3000
         imagePullPolicy: Always  # Always pull the latest image
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+  type: Recreate

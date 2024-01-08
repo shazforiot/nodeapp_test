@@ -50,7 +50,7 @@ jobs:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
       run: |
         gcloud container clusters get-credentials innotest-cluster --region us-central1-c
-        kubectl set image deployment/nodeapp-deployment nodeserver=node:latest
+        kubectl rollout restart deployment nodeapp-deployment 
         kubectl apply -f deployment.yaml
         kubectl apply -f service.yaml
 

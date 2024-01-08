@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 
 app.get('/', function (req, res) {
-    res.send('{ "response": "Welcome to Git-Hub Actions" }');
+    res.send('{ "response": "Welcome to Innodata India pvt.ltd" }');
 });
 
 app.get('/will', function (req, res) {

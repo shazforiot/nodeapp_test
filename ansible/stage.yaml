@@ -1,0 +1,8 @@
+---
+- name: Node.js CI - Staging Environment
+  hosts: staging
+  gather_facts: true
+  become: yes
+
+  tasks:
+    # Similar tasks as in the development environment playbook with environment-specific adjustments

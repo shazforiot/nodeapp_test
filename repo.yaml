@@ -11,5 +11,5 @@
 
     - name: Clone GitHub Repository
       ansible.builtin.git:
-        repo: "https://github.com/mnagaraju5628/Testproject-INNO.git"
+        repo: "https://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@github.com/mnagaraju5628/Testproject-INNO.git"
         dest: "/home/mnagaraju/actions-runner/Testproject-INNO"

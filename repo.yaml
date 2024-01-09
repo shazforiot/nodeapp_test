@@ -1,15 +1,14 @@
 ---
-- name: Clone Repository
-  hosts: localhost
-  gather_facts: false
+- name: git module demo
+  hosts: all
+  become: true
 
   tasks:
-    - name: Ensure directory exists
-      ansible.builtin.file:
-        path: "/home/mnagaraju/actions-runner/Testproject-INNO"
-        state: directory
-
-    - name: Clone GitHub Repository
-      ansible.builtin.git:
+    - name: ensure git pkg installed
+      ansible.builtin.yum:
+        name: git
+        state: present
+    - name: checkout git repo
+      ansible.builtin.git: 
         repo: "https://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@github.com/mnagaraju5628/Testproject-INNO.git"
         dest: "/home/mnagaraju/actions-runner/Testproject-INNO"

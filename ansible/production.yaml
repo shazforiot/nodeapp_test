@@ -1,8 +1,0 @@
----
-- name: Node.js CI - Production Environment
-  hosts: production
-  gather_facts: true
-  become: yes
-
-  tasks:
-    # Similar tasks as in the development environment playbook with environment-specific adjustments

@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup Ansible
-        uses: ansible/ansible-setup@v2
+        uses: ansible/setup-ansible@v2
         with:
           ansible-version: '2.10'
 

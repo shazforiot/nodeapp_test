@@ -1,0 +1,15 @@
+---
+- name: Clone Repository
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Ensure directory exists
+      ansible.builtin.file:
+        path: "/path/to/destination"
+        state: directory
+
+    - name: Clone GitHub Repository
+      ansible.builtin.git:
+        repo: "https://github.com/yourusername/your-repo.git"
+        dest: "/path/to/destination/your-repo"

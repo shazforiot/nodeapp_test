@@ -6,10 +6,10 @@
   tasks:
     - name: Ensure directory exists
       ansible.builtin.file:
-        path: "/path/to/destination"
+        path: "/home/mnagaraju/actions-runner/Testproject-INNO"
         state: directory
 
     - name: Clone GitHub Repository
       ansible.builtin.git:
-        repo: "https://github.com/yourusername/your-repo.git"
-        dest: "/path/to/destination/your-repo"
+        repo: "https://github.com/mnagaraju5628/Testproject-INNO.git"
+        dest: "/home/mnagaraju/actions-runner/Testproject-INNO"

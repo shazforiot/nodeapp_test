@@ -54,9 +54,10 @@ jobs:
 
     - name: Grant Artifact Registry Writer Role
       run: |
-        gcloud projects add-iam-policy-binding ${{ secrets.PROJECT_ID }} \
-         --member "serviceAccount:testproject-inno@goldengate-1.iam.gserviceaccount.com" \
-         --role "roles/artifactregistry.writer"
+        gcloud projects add-iam-policy-binding goldengate-1 \
+         --member="serviceAccount:testproject-inno@goldengate-1.iam.gserviceaccount.com" \
+         --role="roles/artifactregistry.writer"
+
 
     - name: Build and Push Docker Image
       env:

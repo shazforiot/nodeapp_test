@@ -9,8 +9,9 @@ on:
     branches: [ "main" ]
 
 jobs:
-  deploy:
-    runs-on: self-hosted
+  build:
+
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
@@ -18,16 +19,25 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm install
 
-      - name: Setup Ansible
-        uses: ansible/setup-ansible@v2
-        with:
-          ansible-version: '2.10'
+    - name: Setup Ansible
+      run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
 
-      - name: Clone Repository with Ansible
-        run: ansible-playbook clone-repo.yml
+    - name: Run Ansible playbook
+      run: |
+          ansible-playbook -i "localhost," -c local ansible/repo.yaml
+
 
    #   - name: Use Node.js ${{ matrix.node-version }}
    #     uses: actions/setup-node@v3

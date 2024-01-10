@@ -39,16 +39,21 @@ jobs:
         sudo apt-get install -y ansible
         ansible-playbook -i "localhost," -c local ansible/repo.yaml
 
+    - name: Install gcloud CLI and kubectl
+      run: |
+        curl -sSL https://sdk.cloud.google.com | bash
+        exec -l $SHELL
+        gcloud components install kubectl --quiet
+
     - name: Build and Push Docker Image
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         gcloud auth configure-docker us-central1-docker.pkg.dev
-        sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
-
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+
 
       
 

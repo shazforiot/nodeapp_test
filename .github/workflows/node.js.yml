@@ -48,13 +48,13 @@ jobs:
         PROJECT_ID: ${{ secrets.PROJECT_ID }}
 
     
-    - name: Display PROJECT_APPLICATION_CREDENTIALS
+    - name: Display GCLOUD_KEYFILE_JSON
       run: |
-       echo "$PROJECT_APPLICATION_CREDENTIALS"
+       echo "$GCLOUD_KEYFILE_JSON"
 
     - name: Write keyfile.json
       run: |
-       echo "$PROJECT_APPLICATION_CREDENTIALS" | tr -d '\r' > /tmp/keyfile.json
+       echo "$GCLOUD_KEYFILE_JSON" | tr -d '\r' > /tmp/keyfile.json
        cat /tmp/keyfile.json
 
     - name: Authenticate with Google Cloud

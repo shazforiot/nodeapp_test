@@ -7,7 +7,7 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-   branches: [ "main" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -45,6 +45,15 @@ jobs:
         exec -l $SHELL
         gcloud components install kubectl --quiet
 
+    - name: Add IAM Policy Binding
+      run: |
+        gcloud projects add-iam-policy-binding $GOOGLE_PROJECT \
+          --member "serviceAccount:testproject-inno@goldengate-1.iam.gserviceaccount.com" \
+          --role "roles/artifactregistry.writer"
+
+    - name: Update gcloud CLI
+      run: gcloud components update
+
     - name: Build and Push Docker Image
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
@@ -53,6 +62,7 @@ jobs:
         gcloud auth configure-docker us-central1-docker.pkg.dev
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+
 
 
       

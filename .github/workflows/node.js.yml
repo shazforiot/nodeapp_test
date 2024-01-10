@@ -61,7 +61,7 @@ jobs:
     - name: Authenticate with Google Cloud
       run: |
        gcloud auth activate-service-account --key-file=/tmp/keyfile.json
-       gcloud config set project "$PROJECT_ID"
+       gcloud config set project "$goldengate-1"
 
 
     - name: Configure Docker for Artifact Registry

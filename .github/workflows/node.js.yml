@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
@@ -51,12 +51,6 @@ jobs:
     - name: Configure Docker for Artifact Registry
       run: |
         gcloud auth configure-docker us-central1-docker.pkg.dev
-
-    - name: Grant Artifact Registry Writer Role
-      run: |
-        gcloud projects add-iam-policy-binding goldengate-1 \
-         --member="serviceAccount:testproject-inno@goldengate-1.iam.gserviceaccount.com" \
-         --role="roles/artifactregistry.writer"
 
 
     - name: Build and Push Docker Image

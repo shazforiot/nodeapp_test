@@ -47,11 +47,7 @@ jobs:
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
 
-    - name: Authenticate with Google Cloud
-      run: |
-        gcloud auth activate-service-account --key-file=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        gcloud config set project ${{ secrets.GOOGLE_PROJECT }}
-
+    
     - name: Configure Docker for Artifact Registry
       run: |
         gcloud auth configure-docker us-central1-docker.pkg.dev

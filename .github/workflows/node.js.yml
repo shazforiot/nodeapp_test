@@ -49,7 +49,7 @@ jobs:
      
     - name: Add IAM Policy Binding
       run: |
-        gcloud projects add-iam-policy-binding $GOOGLE_PROJECT \
+        gcloud projects add-iam-policy-binding $goldengate-1 \
           --member "serviceAccount:testproject-inno@goldengate-1.iam.gserviceaccount.com" \
           --role "roles/artifactregistry.writer"
 

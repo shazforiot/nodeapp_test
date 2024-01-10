@@ -48,11 +48,19 @@ jobs:
         PROJECT_ID: ${{ secrets.PROJECT_ID }}
 
     
+    - name: Display PROJECT_APPLICATION_CREDENTIALS
+      run: |
+       echo "$PROJECT_APPLICATION_CREDENTIALS"
+
+    - name: Write keyfile.json
+      run: |
+       echo "$PROJECT_APPLICATION_CREDENTIALS" | tr -d '\r' > /tmp/keyfile.json
+       cat /tmp/keyfile.json
+
     - name: Authenticate with Google Cloud
       run: |
-         echo "$PROJECT_APPLICATION_CREDENTIALS" > /tmp/keyfile.json
-         gcloud auth activate-service-account --key-file=/tmp/keyfile.json
-         gcloud config set project "$PROJECT_ID"
+       gcloud auth activate-service-account --key-file=/tmp/keyfile.json
+       gcloud config set project "$PROJECT_ID"
 
     - name: Configure Docker for Artifact Registry
       run: |
@@ -63,10 +71,7 @@ jobs:
        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO
        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
-     
-
-
-
+    
 
       
 

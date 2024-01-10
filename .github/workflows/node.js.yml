@@ -47,10 +47,6 @@ jobs:
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
      
-   
-
-    - name: Update gcloud CLI
-      run: gcloud components update
 
     - name: Build and Push Docker Image
       env:

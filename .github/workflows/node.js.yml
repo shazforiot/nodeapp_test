@@ -44,6 +44,8 @@ jobs:
         curl -sSL https://sdk.cloud.google.com | bash
         exec -l $SHELL
         gcloud components install kubectl --quiet
+      env:
+        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
      
     - name: Add IAM Policy Binding
       run: |

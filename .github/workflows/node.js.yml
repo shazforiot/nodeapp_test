@@ -48,18 +48,22 @@ jobs:
         PROJECT_ID: ${{ secrets.PROJECT_ID }}
 
     
+    - name: Authenticate with Google Cloud
+      run: |
+         echo "$PROJECT_APPLICATION_CREDENTIALS" > /tmp/keyfile.json
+         gcloud auth activate-service-account --key-file=/tmp/keyfile.json
+         gcloud config set project "$PROJECT_ID"
+
     - name: Configure Docker for Artifact Registry
       run: |
-        gcloud auth configure-docker us-central1-docker.pkg.dev
-
+       gcloud auth configure-docker us-central1-docker.pkg.dev
 
     - name: Build and Push Docker Image
-      env:
-        PROJECT_ID: ${{ secrets.PROJECT_ID }}
-        PROJECT_APPLICATION_CREDENTIALS: ${{ secrets.PROJECT_APPLICATION_CREDENTIALS }}
       run: |
-        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO
-        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+       docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO
+       docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+
+     
 
 
 

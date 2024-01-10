@@ -45,7 +45,7 @@ jobs:
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         gcloud auth configure-docker us-central1-docker.pkg.dev
-        gcloud components install gke-gcloud-auth-plugin
+        sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
 
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest

@@ -52,15 +52,17 @@ jobs:
       run: |
        echo "$GCLOUD_KEYFILE_JSON"
 
-    - name: Write keyfile.json
-      run: |
-       echo "$GCLOUD_KEYFILE_JSON" | tr -d '\r' > /tmp/keyfile.json
-       cat /tmp/keyfile.json
+    - name: Use keyfile.json
+      run: echo "${{ secrets.GCLOUD_KEYFILE_JSON }}" | tr -d '\r' > /tmp/keyfile.json
+
+    - name: Display keyfile.json content
+      run: cat /tmp/keyfile.json
 
     - name: Authenticate with Google Cloud
       run: |
        gcloud auth activate-service-account --key-file=/tmp/keyfile.json
        gcloud config set project "$PROJECT_ID"
+
 
     - name: Configure Docker for Artifact Registry
       run: |

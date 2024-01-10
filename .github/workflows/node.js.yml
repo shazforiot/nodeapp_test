@@ -46,16 +46,30 @@ jobs:
         gcloud components install kubectl --quiet
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-     
+
+    - name: Authenticate with Google Cloud
+      run: |
+        gcloud auth activate-service-account --key-file=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        gcloud config set project ${{ secrets.GOOGLE_PROJECT }}
+
+    - name: Configure Docker for Artifact Registry
+      run: |
+        gcloud auth configure-docker us-central1-docker.pkg.dev
+
+    - name: Grant Artifact Registry Writer Role
+      run: |
+        gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
+          --member "serviceAccount:testproject-inno@goldengate-1.iam.gserviceaccount.com" \
+          --role "roles/artifactregistry.writer"
 
     - name: Build and Push Docker Image
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
         GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
-        gcloud auth configure-docker us-central1-docker.pkg.dev
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+
 
 
 

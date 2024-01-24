@@ -17,7 +17,6 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v3
@@ -30,12 +29,18 @@ jobs:
     - run: npm run build --if-present
     - run: npm install
     
+    - name: Authenticate with gcloud
+      run: gcloud auth login
+
+    - name: Set gcloud account
+      run: gcloud config set account testgcp-sa@goldengate-1.iam.gserviceaccount.com
+      # Replace <ACCOUNT_EMAIL> with the email address associated with the service account.
+
     - name: Install the gcloud cli
       uses: google-github-actions/setup-gcloud@v0.2.0
       with:
         project_id: ${{ secrets.GOOGLE_PROJECT }}
         service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        install_components: 'gke-gcloud-auth-plugin'
         export_default_credentials: true
 
     - name: build and push the docker image
@@ -45,6 +50,7 @@ jobs:
         gcloud auth configure-docker us-central1-docker.pkg.dev
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest .
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+
     - name: deploy to gke
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
@@ -53,6 +59,7 @@ jobs:
         kubectl rollout restart deployment nodeapp-deployment 
         kubectl apply -f deployment.yaml
         kubectl apply -f service.yaml
+
 
     
 

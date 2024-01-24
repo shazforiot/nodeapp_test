@@ -1,7 +1,7 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Build and Deploy
+name: Node.js CI
 
 on:
   push:
@@ -10,68 +10,49 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  deploy:
+
+    runs-on: self-hosted
 
     strategy:
       matrix:
         node-version: [14.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up Node.js
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-
-    - name: Install dependencies and build
-      run: |
-        npm ci
-        npm run build --if-present
-        npm install
-
-    - name: Setup Ansible and Run Ansible playbook
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y ansible
-        ansible-playbook -i "localhost," -c local ansible/repo.yaml
-
-    - name: Install gcloud CLI and kubectl
-      run: |
-        curl -sSL https://sdk.cloud.google.com | bash
-        exec -l $SHELL
-        gcloud components install kubectl --quiet
-      env:
-        PROJECT_ID: ${{ secrets.PROJECT_ID }}
-
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm install
     
-    - name: Display GCLOUD_KEYFILE_JSON
+    - name: install the gcloud cli
+      uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        project_id: ${{ secrets.GOOGLE_PROJECT }}
+        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        install_components: 'gke-gcloud-auth-plugin'
+        export_default_credentials: true
+
+    - name: build and push the docker image
+      env:
+        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
       run: |
-       echo "$GCLOUD_KEYFILE_JSON"
-
-    - name: Use keyfile.json
-      run: echo "${{ secrets.GCLOUD_KEYFILE_JSON }}" | tr -d '\r' > /tmp/keyfile.json
-
-    - name: Display keyfile.json content
-      run: cat /tmp/keyfile.json
-
-    - name: Authenticate with Google Cloud
+        gcloud auth configure-docker us-central1-docker.pkg.dev
+        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest .
+        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+    - name: deploy to gke
+      env:
+        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
       run: |
-       gcloud auth activate-service-account --key-file=/tmp/keyfile.json
-       gcloud config set project "$goldengate-1"
-
-
-    - name: Configure Docker for Artifact Registry
-      run: |
-       gcloud auth configure-docker us-central1-docker.pkg.dev
-
-    - name: Build and Push Docker Image
-      run: |
-       docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO
-       docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+        gcloud container clusters get-credentials innotest-cluster --region us-central1-c
+        kubectl rollout restart deployment nodeapp-deployment 
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
 
     
 

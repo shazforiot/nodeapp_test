@@ -30,7 +30,7 @@ jobs:
     - run: npm run build --if-present
     - run: npm install
     
-    - name: install the gcloud cli
+    - name: Install the gcloud cli
       uses: google-github-actions/setup-gcloud@v0.2.0
       with:
         project_id: ${{ secrets.GOOGLE_PROJECT }}

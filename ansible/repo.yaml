@@ -1,7 +1,8 @@
 ---
-- name: Checkout Node.js Code
+- name: Checkout Node.js Code and Push Docker Image
   hosts: localhost
   gather_facts: false
+
   tasks:
     - name: Ensure git is installed
       become: true
@@ -14,4 +15,16 @@
         repo: https://github.com/mnagaraju5628/Testproject-INNO.git
         dest: /home/mnagaraju/actions-runner/Testproject-INNO
         version: main  # replace 'main' with your branch name if different
+      become: true
+
+    - name: Build Docker Image
+      command: "docker build -t us-central1-docker.pkg.dev/	goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO"
+      become: true
+
+    - name: Authenticate Docker with Google Cloud
+      command: "gcloud auth configure-docker"
+      become: true
+
+    - name: Push Docker Image to Artifact Registry
+      command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
       become: true

@@ -17,4 +17,18 @@
         version: main  # replace 'main' with your branch name if different
       become: true
 
+    # Your existing tasks go here...
+
+    - name: Build Docker Image
+      become: true
+      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO"
+
+    - name: Authenticate Docker with Google Cloud
+      become: true
+      command: "gcloud auth configure-docker us-central1-docker.pkg.dev"
+
+    - name: Push Docker Image to Google Artifact Registry
+      become: true
+      command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
+
    

@@ -47,7 +47,7 @@ jobs:
        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         gcloud auth configure-docker us-central1-docker.pkg.dev
-        gcloud projects add-iam-policy-binding $GOOGLE_PROJECT --member="serviceAccount:testgcp-sa@goldengate-1.iam.gserviceaccount.com" --role="roles/artifactregistry.writer"
+        gcloud projects add-iam-policy-binding goldengate-1 --member="serviceAccount:testgcp-sa@goldengate-1.iam.gserviceaccount.com" --role="roles/artifactregistry.writer"
 
     - name: Build and Push Docker Image
       env:

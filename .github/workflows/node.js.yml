@@ -55,7 +55,7 @@ jobs:
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
       run: |
-        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO
+        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/Testproject-INNO
 
         # Push the Docker image to Google Artifact Registry
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest

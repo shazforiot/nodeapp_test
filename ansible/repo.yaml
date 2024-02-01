@@ -1,15 +1,22 @@
-- name: Checkout Node.js Code, Build Docker Image, and Push to Artifact Registry
+---
+- name: Git Checkout, Docker Install, Build Image, and Push to Artifact Registry
   hosts: localhost
   gather_facts: false
 
   tasks:
-    - name: Ensure git and Docker are installed
+    - name: Ensure git is installed
+      become: true
+      apt:
+        name: git
+        state: present
+
+    - name: Ensure Docker dependencies are installed
       become: true
       apt:
         name: "{{ item }}"
         state: present
       loop:
-        - git
+        - containerd
         - docker.io
 
     - name: Clone Node.js code from GitHub
@@ -24,11 +31,12 @@
       become: true
 
     - name: Tag Docker image for artifact registry
-      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
+      command: "docker tag node:latest registry.example.com/node:latest"
       become: true
 
     - name: Push Docker image to artifact registry
-      command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latestt"
+      command: " docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
       become: true
+
 
     

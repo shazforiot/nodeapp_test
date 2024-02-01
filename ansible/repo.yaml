@@ -30,10 +30,6 @@
       command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/Testproject-INNO"
       become: true
 
-    - name: Tag Docker image for artifact registry
-      command: "docker tag node:latest us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
-      become: true
-
     - name: Push Docker image to artifact registry
       command: " docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
       become: true

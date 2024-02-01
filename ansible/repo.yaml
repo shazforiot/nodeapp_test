@@ -31,7 +31,7 @@
       become: true
 
     - name: Tag Docker image for artifact registry
-      command: "docker tag node:latest registry.example.com/node:latest"
+      command: "docker tag node:latest us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
       become: true
 
     - name: Push Docker image to artifact registry

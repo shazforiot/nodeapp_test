@@ -1,20 +1,34 @@
----
-- name: Checkout Node.js Code and Push Docker Image
+- name: Checkout Node.js Code, Build Docker Image, and Push to Artifact Registry
   hosts: localhost
   gather_facts: false
 
   tasks:
-    - name: Ensure git is installed
+    - name: Ensure git and Docker are installed
       become: true
       apt:
-        name: git
+        name: "{{ item }}"
         state: present
+      loop:
+        - git
+        - docker.io
 
     - name: Clone Node.js code from GitHub
       git:
         repo: https://github.com/mnagaraju5628/Testproject-INNO.git
-        dest: /home/mnagaraju/actions-runner/Testproject-INNO
+        dest: /home/mnagaraju/Testproject-INNO
         version: main  # replace 'main' with your branch name if different
+      become: true
+
+    - name: Build Docker image
+      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/Testproject-INNO"
+      become: true
+
+    - name: Tag Docker image for artifact registry
+      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
+      become: true
+
+    - name: Push Docker image to artifact registry
+      command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latestt"
       become: true
 
     

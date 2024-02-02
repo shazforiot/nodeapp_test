@@ -61,6 +61,15 @@ jobs:
           --member "serviceAccount:${{ secrets.GCP_SA_EMAIL }}" \
           --role roles/artifactregistry.repositories.uploadArtifacts
         gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
+          --member "serviceAccount:${{ steps.auth.outputs.client_email }}" \
+          --role roles/artifactregistry.repositories.uploadArtifacts
+
+    - name: Set Iam Policy permissions
+      run: |
+        gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
+          --member "serviceAccount:${{ secrets.GCP_SA_EMAIL }}" \
+          --role roles/projects.setIamPolicy
+        gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
           --member "serviceAccount:${{ secrets.GCP_SA_EMAIL }}" \
           --role roles/projects.setIamPolicy
 
@@ -70,6 +79,7 @@ jobs:
       run: |
         docker build -t us-central1-docker.pkg.dev/goldengate-1/ansibletest-project/node:latest /home/mnagaraju/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/ansibletest-project/node:latest
+
 
 
 

@@ -58,7 +58,7 @@ jobs:
     - name: Set Artifact Registry permissions
       run: |
         gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
-          --member "serviceAccount:${{ steps.auth.outputs.client_email }}" \
+          --member "serviceAccount:${{ secrets.GCP_SA_KEY }}" \
           --role roles/artifactregistry.repositories.uploadArtifacts
 
     - name: Build and Push Docker Image

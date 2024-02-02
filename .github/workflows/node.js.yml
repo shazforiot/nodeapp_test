@@ -42,11 +42,16 @@ jobs:
         curl -sSL https://sdk.cloud.google.com | bash
         exec -l $SHELL
         gcloud components install kubectl --quiet
+    - name: Authenticate with Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+    
     - name: Authenticate Docker with Google Cloud
-      env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         gcloud auth configure-docker us-central1-docker.pkg.dev/goldengate-1/ansibletest-project
+
     - name: Build and Push Docker Image
       env:
         GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}

@@ -32,25 +32,35 @@ jobs:
         npm ci
         npm run build --if-present
         npm install
+
     - name: Setup Ansible and Run Ansible playbook
       run: |
         sudo apt-get update
         sudo apt-get install -y ansible
         ansible-playbook -i "localhost," -c local ansible/repo.yaml
+
     - name: Install gcloud CLI and kubectl
       run: |
         curl -sSL https://sdk.cloud.google.com | bash
         exec -l $SHELL
         gcloud components install kubectl --quiet
+
     - name: Authenticate with Google Cloud
       id: auth
       uses: google-github-actions/auth@v1
       with:
         credentials_json: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-    
+
     - name: Authenticate Docker with Google Cloud
       run: |
         gcloud auth configure-docker us-central1-docker.pkg.dev/goldengate-1/ansibletest-project
+
+    - name: Set Artifact Registry permissions
+      run: |
+        gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
+          --member "serviceAccount:${{ steps.auth.outputs.client_email }}" \
+          --role roles/artifactregistry.repositories.uploadArtifacts \
+          --region us-central1
 
     - name: Build and Push Docker Image
       env:

@@ -61,7 +61,7 @@ jobs:
           --member "serviceAccount:${{ secrets.GCP_SA_EMAIL }}" \
           --role roles/artifactregistry.repositories.uploadArtifacts
         gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
-          --member "user:${{ steps.auth.outputs.client_email }}" \
+          --member "serviceAccount:${{ secrets.GCP_SA_EMAIL }}" \
           --role roles/projects.setIamPolicy
 
     - name: Build and Push Docker Image
@@ -70,6 +70,7 @@ jobs:
       run: |
         docker build -t us-central1-docker.pkg.dev/goldengate-1/ansibletest-project/node:latest /home/mnagaraju/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/ansibletest-project/node:latest
+
 
 
 

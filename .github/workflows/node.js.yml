@@ -59,8 +59,7 @@ jobs:
       run: |
         gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
           --member "serviceAccount:${{ steps.auth.outputs.client_email }}" \
-          --role roles/artifactregistry.repositories.uploadArtifacts \
-          --region us-central1
+          --role roles/artifactregistry.repositories.uploadArtifacts
 
     - name: Build and Push Docker Image
       env:
@@ -68,6 +67,7 @@ jobs:
       run: |
         docker build -t us-central1-docker.pkg.dev/goldengate-1/ansibletest-project/node:latest /home/mnagaraju/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/ansibletest-project/node:latest
+
 
 
 

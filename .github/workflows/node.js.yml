@@ -55,6 +55,7 @@ jobs:
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
 
+
       
 
     

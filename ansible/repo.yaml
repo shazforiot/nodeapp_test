@@ -26,7 +26,7 @@
         version: main  # replace 'main' with your branch name if different
       become: true
     - name: Build Docker image
-      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/Testproject-INNO"
+      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO"
       become: true
 
     - name: Check if Docker image exists
@@ -34,11 +34,6 @@
       register: docker_image_check
       become: true
       changed_when: false
-
-    - name: Tag Docker image for artifact registry
-      command: "docker tag node:latest us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
-      become: true
-      when: docker_image_check.stdout_lines | length > 0
 
     - name: Push Docker image to artifact registry
       command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"

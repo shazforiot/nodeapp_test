@@ -47,9 +47,10 @@ jobs:
 
     - name: Authenticate Docker with Google Cloud
       run: |
-        gcloud auth activate-service-account --key-file=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        gcloud auth activate-service-account --key-file=${{ github.workspace }}/${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         gcloud config set project ${{ secrets.GOOGLE_PROJECT }}
-        gcloud auth configure-docker us-central1-docker.pkg.dev/goldengate-1/test-project
+        gcloud auth configure-docker us-central1-docker.pkg.dev/***/test-project
+        shell: /usr/bin/bash -e ***0***
 
     - name: Build and Push Docker Image
       run: |

@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     strategy:
       matrix:
@@ -54,24 +54,6 @@ jobs:
     - name: Authenticate Docker with Google Cloud
       run: |
         gcloud auth configure-docker us-central1-docker.pkg.dev/goldengate-1/ansibletest-project
-
-    - name: Set Artifact Registry permissions
-      run: |
-        gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
-          --member "serviceAccount:${{ secrets.GCP_SA_EMAIL }}" \
-          --role roles/artifactregistry.repositories.uploadArtifacts
-        gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
-          --member "serviceAccount:${{ steps.auth.outputs.client_email }}" \
-          --role roles/artifactregistry.repositories.uploadArtifacts
-
-    - name: Set Iam Policy permissions
-      run: |
-        gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
-          --member "serviceAccount:${{ secrets.GCP_SA_EMAIL }}" \
-          --role roles/projects.setIamPolicy
-        gcloud projects add-iam-policy-binding ${{ secrets.GOOGLE_PROJECT }} \
-          --member "serviceAccount:${{ secrets.GCP_SA_EMAIL }}" \
-          --role roles/projects.setIamPolicy
 
     - name: Build and Push Docker Image
       env:

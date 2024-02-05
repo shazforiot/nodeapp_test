@@ -12,9 +12,7 @@ on:
 jobs:
   build:
     runs-on: self-hosted
-    defaults:
-      run:
-        shell: bash -l {0}
+    
 
     strategy:
       matrix:
@@ -30,11 +28,11 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    # Uncomment the following block if you need to install dependencies and build
-    # - name: Install dependencies and build
-    #   run: |
-    #     npm ci
-    #     npm run build --if-present
+    
+    - name: Install dependencies and build
+      run: |
+        npm ci
+        npm run build --if-present
 
     - name: Install the gcloud CLI
       uses: google-github-actions/setup-gcloud@v0.2.0

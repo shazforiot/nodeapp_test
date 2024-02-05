@@ -30,11 +30,11 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-   # - name: Install dependencies and build
-   #   run: |
-   #     npm ci
-   #     npm run build --if-present
-   #     npm install 
+    # Uncomment the following block if you need to install dependencies and build
+    # - name: Install dependencies and build
+    #   run: |
+    #     npm ci
+    #     npm run build --if-present
 
     - name: Setup Ansible and Run Ansible playbook
       run: |
@@ -42,17 +42,18 @@ jobs:
         sudo apt-get install -y ansible
         ansible-playbook -i "localhost," -c local ansible/repo.yaml -K
 
-    - name: Install gcloud CLI and kubectl
+    - name: Install gcloud CLI and authenticate
       run: |
         curl -sSL https://sdk.cloud.google.com | bash
         exec -l $SHELL
-        gcloud components install kubectl --quiet
+        gcloud auth configure-docker
 
-    
     - name: Build and Push Docker Image
       run: |
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+
+
 
         
       

@@ -12,9 +12,9 @@ on:
 jobs:
   build:
     runs-on: self-hosted
-   # defaults:
-   #   run:
-   #     shell: bash -l {0}
+    defaults:
+      run:
+        shell: bash -l {0}
 
     strategy:
       matrix:

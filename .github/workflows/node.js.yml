@@ -47,6 +47,19 @@ jobs:
         
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+   
+    - name: Install the gcloud plugin
+      uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+         install_components: 'gke-gcloud-auth-plugin'
+         export_default_credentials: true
+             
+    - name: Deploy to GKE
+      run: |
+        gcloud container clusters get-credentials innotest-cluster --region us-central1-c
+        kubectl rollout restart deployment nodeapp-deployment 
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
 
 
 

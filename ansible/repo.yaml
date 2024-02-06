@@ -36,9 +36,11 @@
       ignore_errors: true
 
     - name: Push Docker image to artifact registry
-      community.docker.docker_image_push:
+      docker_image_push:
         name: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+        source: build
       when: docker_image_check is defined and docker_image_check.stdout_lines | length > 0
+
 
 
 

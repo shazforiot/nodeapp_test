@@ -1,6 +1,5 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Build and Deploy
 
 on:
@@ -38,6 +37,14 @@ jobs:
         sudo apt-get install -y ansible
         ansible-playbook -i "localhost," -c local ansible/repo.yaml -K
 
+    - name: Install the gcloud-auth-plugin
+      uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        project_id: ${{ secrets.GOOGLE_PROJECT }}
+        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        install_components: 'gke-gcloud-auth-plugin'
+        export_default_credentials: true
+
     - name: Build and Push Docker Image
       run: |
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
@@ -45,10 +52,11 @@ jobs:
 
     - name: Deploy to GKE
       run: |
-        gcloud container clusters get-credentials innotest-cluster --region us-central1-c 
+        gcloud container clusters get-credentials innotest-cluster --region us-central1-c
         kubectl rollout restart deployment nodeapp-deployment 
         kubectl apply -f deployment.yaml
         kubectl apply -f service.yaml
+
 
 
 

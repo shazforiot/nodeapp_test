@@ -22,11 +22,11 @@
     - name: Clone Node.js code from GitHub
       git:
         repo: https://github.com/mnagaraju5628/Testproject-INNO.git
-        dest: /home/mnagaraju/actions-runner/Testproject-INNO
+        dest: /home/ubuntu/actions-runner/Testproject-INNO
         version: main  # replace 'main' with your branch name if different
       become: true
     - name: Build Docker image
-      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO"
+      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"
       become: true
 
     - name: Check if Docker image exists

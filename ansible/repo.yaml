@@ -25,14 +25,21 @@
         dest: /home/ubuntu/actions-runner/Testproject-INNO
         version: main  # replace 'main' with your branch name if different
       become: true
+
     - name: Build Docker image
       command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"
       become: true
 
+    - name: Check if Docker image exists
+      command: docker image inspect us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+      register: docker_image_check
+      ignore_errors: true
+
     - name: Push Docker image to artifact registry
-      command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
-      become: true
-      when: docker_image_check.stdout_lines | length > 0
+      docker_image_push:
+        name: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+      when: docker_image_check is defined and docker_image_check.stdout_lines | length > 0
+
 
 
 

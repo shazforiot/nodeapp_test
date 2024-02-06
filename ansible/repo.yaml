@@ -29,14 +29,8 @@
       command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"
       become: true
 
-    - name: Check if Docker image exists
-      command: "docker images -q node:latest"
-      register: docker_image_check
-      become: true
-      changed_when: false
-
     - name: Push Docker image to artifact registry
-      command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
+      command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"
       become: true
       when: docker_image_check.stdout_lines | length > 0
 

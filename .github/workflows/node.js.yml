@@ -37,7 +37,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ansible
         ansible-playbook -i "localhost," -c local ansible/repo.yaml -K
-    - name: Install the gcloud CLI
+
+    - name: Install the gcloud-auth-plugin
       uses: google-github-actions/setup-gcloud@v0.2.0
       with:
         project_id: ${{ secrets.GOOGLE_PROJECT }}
@@ -49,6 +50,7 @@ jobs:
       run: |
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+
     - name: Deploy to GKE
       run: |
         gcloud container clusters get-credentials innotest-cluster --region us-central1-c

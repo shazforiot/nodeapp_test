@@ -37,5 +37,8 @@
     - name: Push Docker image to artifact registry
       community.general.docker_image:
         name: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+        repository: us-central1-docker.pkg.dev/goldengate-1/test-project/node
+        tag: latest
         source: build
       when: docker_image_check is defined and docker_image_check.stdout_lines | length > 0
+

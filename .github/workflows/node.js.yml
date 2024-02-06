@@ -34,32 +34,20 @@ jobs:
         npm ci
         npm run build --if-present
 
-    - name: Install the gcloud CLI
-      uses: google-github-actions/setup-gcloud@v0.2.0
-      with:
-        project_id: ${{ secrets.GOOGLE_PROJECT }}
-        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        install_components: 'gke-gcloud-auth-plugin'
-        export_default_credentials: true
-
+   
     - name: Setup Ansible and Run Ansible playbook
       run: |
-        sudo apt-get update
-        sudo apt-get install -y ansible
+        apt-get update
+        apt-get install -y ansible
         ansible-playbook -i "localhost," -c local ansible/repo.yaml -K
 
-    - name: Install gcloud CLI and authenticate
-      run: |
-        curl -sSL https://sdk.cloud.google.com | bash
-        exec -l $SHELL
-        gcloud auth configure-docker
-
+    
     - name: Build and Push Docker Image
       env:
           GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
       run: |
         gcloud auth configure-docker us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/mnagaraju/actions-runner/Testproject-INNO
+        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
 

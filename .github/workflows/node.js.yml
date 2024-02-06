@@ -45,8 +45,8 @@ jobs:
     - name: Build and Push Docker Image
       run: |
         
-        docker build -t asia-south1-docker.pkg.dev/goldengate-1/testgcp-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
-        docker push asia-south1-docker.pkg.dev/goldengate-1/testgcp-project/node:latest
+        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
+        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
 
 

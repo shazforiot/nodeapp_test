@@ -38,7 +38,7 @@ jobs:
         sudo apt-get install -y ansible
         ansible-playbook -i "localhost," -c local ansible/repo.yaml -K
     - name: Install the gcloud plugin
-      uses: google-github-actions/setup-gcloud@v0.2.0
+      uses: google-github-actions/setup-gcloud@v0.2.0  /home/ubuntu/actions-runner/Testproject-INNO
       with:
          install_components: 'gke-gcloud-auth-plugin'
          export_default_credentials: true

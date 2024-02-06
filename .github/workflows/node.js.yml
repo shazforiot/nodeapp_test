@@ -45,7 +45,7 @@ jobs:
 
     - name: Deploy to GKE
       run: |
-        gcloud container clusters get-credentials innotest-cluster --region us-central1-c
+        gcloud container clusters get-credentials innotest-cluster --region us-central1-c /home/ubuntu/actions-runner/Testproject-INNO
         kubectl rollout restart deployment nodeapp-deployment 
         kubectl apply -f deployment.yaml
         kubectl apply -f service.yaml

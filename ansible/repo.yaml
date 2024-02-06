@@ -32,7 +32,7 @@
     - name: Push Docker image to artifact registry
       command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"
       become: true
-      when: docker_image_check.stdout_lines | length > 0
+     # when: docker_image_check.stdout_lines | length > 0
 
 
 

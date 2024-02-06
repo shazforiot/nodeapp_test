@@ -26,11 +26,11 @@
         version: main  # replace 'main' with your branch name if different
       become: true
     - name: Build Docker image
-      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"
+      command: "docker build -t asia-south1-docker.pkg.dev/goldengate-1/testgcp-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"
       become: true
 
     - name: Push Docker image to artifact registry
-      command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
+      command: "docker push asia-south1-docker.pkg.dev/goldengate-1/testgcp-project/node:latest"
       become: true
      # when: docker_image_check.stdout_lines | length > 0
 

@@ -42,12 +42,7 @@ jobs:
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
-    - name: Authenticate with Google Cloud
-      env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        run: |
-          gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
-
+    
     - name: Deploy to GKE
       run: |
         gcloud container clusters get-credentials innotest-cluster --region us-central1-c

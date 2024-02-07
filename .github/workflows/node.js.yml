@@ -45,7 +45,7 @@ jobs:
     - name: Authenticate with Google Cloud
       uses: google-github-actions/auth@v0.2.0
       with:
-        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        service_account: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
     - name: Deploy to GKE
       run: |
@@ -53,6 +53,8 @@ jobs:
         kubectl rollout restart deployment nodeapp-deployment 
         kubectl apply -f deployment.yaml
         kubectl apply -f service.yaml
+
+
 
 
 

@@ -53,12 +53,12 @@ jobs:
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
     
- #   - name: Deploy to GKE
- #     run: |
- #       gcloud container clusters get-credentials innotest-cluster --region us-central1-c
- #       kubectl rollout restart deployment nodeapp-deployment 
- #       kubectl apply -f deployment.yaml --validate=false
- #       kubectl apply -f service.yaml --validate=false
+    - name: Deploy to GKE
+      run: |
+        gcloud container clusters get-credentials innotest-cluster --region us-central1-c
+        kubectl rollout restart deployment nodeapp-deployment 
+        kubectl apply -f deployment.yaml --validate=false
+        kubectl apply -f service.yaml --validate=false
 
 
 

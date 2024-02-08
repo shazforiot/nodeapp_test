@@ -51,20 +51,18 @@ jobs:
       run: |
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-   
 
-    - name: Configure Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v0.2.0
-      with:
-         service_account_key: ${{ secrets.GCP_SA_KEY }}
-         project_id: goldengate-1
-         export_default_credentials: true
+    - name: Log in to Google Cloud
+      run: |
+        gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/cred.json
+
     - name: Deploy to GKE
       run: |
         gcloud container clusters get-credentials innotest-cluster --region us-central1-c
-        kubectl rollout restart deployment nodeapp-deployment 
-        kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/deployment.yaml 
-        kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/service.yaml 
+        kubectl rollout restart deployment nodeapp-deployment -n your-namespace
+        kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/deployment.yaml -n your-namespace
+        kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/service.yaml -n your-namespace
+
 
 
     

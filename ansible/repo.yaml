@@ -44,7 +44,7 @@
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
     - name: Set project and zone for GKE
-      command: gcloud config set project goldengate-1 && gcloud config set compute/zone us-central1-c
+      shell: gcloud config set project goldengate-1 && gcloud config set compute/zone us-central1-c
       become: true
 
     - name: Get credentials for the GKE cluster

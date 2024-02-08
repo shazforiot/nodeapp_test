@@ -44,17 +44,27 @@
       command: >
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
+    - name: Install gke-gcloud-auth-plugin
+      command: curl -o /usr/local/bin/gke-gcloud-auth-plugin https://path/to/latest/gke-gcloud-auth-plugin && chmod +x /usr/local/bin/gke-gcloud-auth-plugin
+
     - name: Configure kubectl
       command: gcloud container clusters get-credentials innotest-cluster --zone us-central1-c
       environment:
         CLOUDSDK_CORE_DISABLE_PROMPTS: "true"
 
-    - name: Apply Kubernetes deployment manifest using kubectl
-      command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/deployment.yaml
-      args:
-        creates: /home/ubuntu/actions-runner/Testproject-INNO/deployment.yaml  # Ensures idempotence
+- name: Deploy to GKE
+  hosts: localhost
+  gather_facts: false
 
-    - name: Apply Kubernetes service manifest using kubectl
-      command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/service.yaml
-      args:
-        creates: /home/ubuntu/actions-runner/Testproject-INNO/service.yaml  # Ensures idempotence
+  tasks:
+    - name: Get credentials for GKE cluster
+      command: gcloud container clusters get-credentials innotest-cluster --region us-central1-c
+
+    - name: Restart Deployment
+      command: kubectl rollout restart deployment nodeapp-deployment 
+
+    - name: Apply Deployment YAML
+      command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/deployment.yaml 
+
+    - name: Apply Service YAML
+      command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/service.yaml 

@@ -25,6 +25,15 @@
         version: main  # replace 'main' with your branch name if different
       become: true
 
+    # Additional tasks for building Docker image and pushing it to Artifact Registry
+    - name: Build Docker image
+      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"
+      become: true
+
+    - name: Push Docker image to artifact registry
+      command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
+      become: true
+
   #  - name: Build Docker image
   #    command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO/ansible"
   #    become: true

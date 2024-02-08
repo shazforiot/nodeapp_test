@@ -47,8 +47,12 @@
       shell: gcloud config set project goldengate-1 && gcloud config set compute/zone us-central1-c
       become: true
 
+    - name: Set GOOGLE_APPLICATION_CREDENTIALS environment variable
+      shell: export GOOGLE_APPLICATION_CREDENTIALS=/home/ubuntu/actions-runner/cred.json
+      become: true
+
     - name: Get credentials for the GKE cluster
-      shell: gcloud container clusters get-credentials innotest-cluster --region=us-central1 --project=goldengate-1 --impersonate-service-account=testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/cred.json
+      shell: gcloud container clusters get-credentials innotest-cluster --region=us-central1 --project=goldengate-1
       become: true
 
     - name: Deploy Docker image to GKE

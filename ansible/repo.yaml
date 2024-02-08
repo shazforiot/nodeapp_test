@@ -1,6 +1,3 @@
-fix the error and correct the below workflowfile
-
-
 - name: Git Checkout, Docker Install, Build Image, Push to Artifact Registry, and Deploy to GKE
   hosts: localhost
   gather_facts: false

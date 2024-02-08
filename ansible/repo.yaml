@@ -1,13 +1,29 @@
----
-- name: GitHub Actions Workflow with Ansible
+- name: Git Checkout, Docker Install, Build Image, and Push to Artifact Registry
   hosts: localhost
-  gather_facts: no
-  tasks:
-    - name: Run npm test
-      command: npm test
-      environment:
-        PATH: "{{ ansible_env.PATH }}"
+  gather_facts: false
 
+  tasks:
+    - name: Ensure git is installed
+      become: true
+      apt:
+        name: git
+        state: present
+
+    - name: Ensure Docker dependencies are installed
+      become: true
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - containerd
+        - docker.io
+
+    - name: Clone Node.js code from GitHub
+      git:
+        repo: https://github.com/mnagaraju5628/Testproject-INNO.git
+        dest: /home/ubuntu/actions-runner/Testproject-INNO
+        version: main  # replace 'main' with your branch name if different
+      become: true
     - name: Build Docker image
       command: docker build -t node .
       args:
@@ -21,7 +37,7 @@
         DOCKER_CLI_EXPERIMENTAL: enabled
 
     - name: Log in to Google Cloud
-      command: gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=cred.json
+      command:gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=cred.json
       environment:
         GOOGLE_APPLICATION_CREDENTIALS: /home/ubuntu/actions-runner/
 
@@ -30,22 +46,3 @@
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
       environment:
         GOOGLE_APPLICATION_CREDENTIALS: /home/ubuntu/actions-runner/
-
-
-  #  - name: Build Docker image
-  #    command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO/ansible"
-  #    become: true
-
-  #  - name: Check if Docker image exists
-  #    command: docker image inspect us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-  #    register: docker_image_check
-  #    ignore_errors: true
-
-  #  - name: Push Docker image to artifact registry
-  #    community.general.docker_image:
-  #      name: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-  #      repository: us-central1-docker.pkg.dev/goldengate-1/test-project/node
-  #      tag: latest
-  #      source: build
-  #    when: docker_image_check is defined and docker_image_check.stdout_lines | length > 0
-

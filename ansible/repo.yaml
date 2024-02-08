@@ -43,16 +43,14 @@
       command: >
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
-    - name: Set Kubernetes cluster credentials
-      command: gcloud container clusters get-credentials innotest-cluster --region us-central1-c
-      environment:
-        CLOUDSDK_CORE_PROJECT: "goldengate-1"
+    - name: Set project and zone for GKE
+      command: gcloud config set project goldengate-1 && gcloud config set compute/zone us-central1-c
+      become: true
 
-    - name: Restart deployment
-      command: kubectl rollout restart deployment nodeapp-deployment
+    - name: Get credentials for the GKE cluster
+      command: gcloud container clusters get-credentials innotest-cluster
+      become: true
 
-    - name: Apply deployment configuration
-      command: kubectl apply -f deployment.yaml --validate=false
-
-    - name: Apply service configuration
-      command: kubectl apply -f service.yaml --validate=false
+    - name: Deploy Docker image to GKE
+      command: kubectl set image deployment/nodeapp-deployment nodeserver=us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+      become: true

@@ -51,6 +51,10 @@
 
     - name: Apply Kubernetes deployment manifest
       command: kubectl apply -f deployment.yaml
+       args:
+        chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
     - name: Apply Kubernetes service manifest
       command: kubectl apply -f service.yaml
+       args:
+        chdir: /home/ubuntu/actions-runner/Testproject-INNO

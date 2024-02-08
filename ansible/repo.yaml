@@ -24,6 +24,7 @@
         dest: /home/ubuntu/actions-runner/Testproject-INNO
         version: main  # replace 'main' with your branch name if different
       become: true
+      
     - name: Build Docker image
       command: docker build -t node .
       args:
@@ -37,12 +38,8 @@
         DOCKER_CLI_EXPERIMENTAL: enabled
 
     - name: Log in to Google Cloud
-      command: gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=cred.json
-      environment:
-        GOOGLE_APPLICATION_CREDENTIALS: /home/ubuntu/actions-runner/
+      command: gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/cred.json
 
     - name: Push Docker image to Google Artifact Registry
       command: >
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-      environment:
-        GOOGLE_APPLICATION_CREDENTIALS: /home/ubuntu/actions-runner/

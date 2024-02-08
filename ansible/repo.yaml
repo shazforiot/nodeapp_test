@@ -21,7 +21,7 @@
         DOCKER_CLI_EXPERIMENTAL: enabled
 
     - name: Log in to Google Cloud
-      command:gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=cred.json
+      command: gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=cred.json
       environment:
         GOOGLE_APPLICATION_CREDENTIALS: /home/ubuntu/actions-runner/
 

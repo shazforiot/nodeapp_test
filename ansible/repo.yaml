@@ -32,8 +32,7 @@
 
     - name: Push Docker image to Google Artifact Registry
       command: >
-        docker tag node
-        us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+        docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
       environment:
         DOCKER_CLI_EXPERIMENTAL: enabled
 
@@ -45,7 +44,11 @@
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
     - name: Install gke-gcloud-auth-plugin
-      command: curl -o /usr/local/bin/gke-gcloud-auth-plugin https://path/to/latest/gke-gcloud-auth-plugin && chmod +x /usr/local/bin/gke-gcloud-auth-plugin
+      become: true
+      get_url:
+        url: "https://path/to/latest/gke-gcloud-auth-plugin"
+        dest: /usr/local/bin/gke-gcloud-auth-plugin
+        mode: '0755'
 
     - name: Configure kubectl
       command: gcloud container clusters get-credentials innotest-cluster --zone us-central1-c

@@ -48,7 +48,7 @@
       become: true
 
     - name: Get credentials for the GKE cluster
-      command: gcloud container clusters get-credentials innotest-cluster --project=goldengate-1 --zone=us-central1-c --service-account=testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/cred.json
+      command:  gcloud container clusters get-credentials innotest-cluster --region us-central1-c --project=goldengate-1  --service-account=testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/cred.json
       become: true
 
     - name: Deploy Docker image to GKE

@@ -50,8 +50,8 @@
         CLOUDSDK_CORE_DISABLE_PROMPTS: "true"
 
     - name: Apply Kubernetes deployment manifest using kubectl
-      command: kubectl apply -f ./deployment.yaml
+      command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/deployment.yaml
 
     - name: Apply Kubernetes service manifest using kubectl
-      command: kubectl apply -f ./service.yaml
+      command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/service.yaml
 

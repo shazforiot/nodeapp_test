@@ -51,7 +51,10 @@
 
     - name: Apply Kubernetes deployment manifest using kubectl
       command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/deployment.yaml
+      args:
+        creates: /home/ubuntu/actions-runner/Testproject-INNO/deployment.yaml  # Ensures idempotence
 
     - name: Apply Kubernetes service manifest using kubectl
       command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/service.yaml
-
+      args:
+        creates: /home/ubuntu/actions-runner/Testproject-INNO/service.yaml  # Ensures idempotence

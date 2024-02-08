@@ -43,12 +43,12 @@
       command: >
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
-    - name: Install gke-gcloud-auth-plugin
-      become: true
-      get_url:
-        url: "https://path/to/latest/gke-gcloud-auth-plugin"
-        dest: /usr/local/bin/gke-gcloud-auth-plugin
-        mode: '0755'
+ #   - name: Install gke-gcloud-auth-plugin
+ #     become: true
+ #     get_url:
+ #       url: "https://path/to/latest/gke-gcloud-auth-plugin"
+ #       dest: /usr/local/bin/gke-gcloud-auth-plugin
+ #       mode: '0755'
 
     - name: Configure kubectl
       command: gcloud container clusters get-credentials innotest-cluster --zone us-central1-c

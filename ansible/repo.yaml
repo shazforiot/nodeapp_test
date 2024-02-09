@@ -52,7 +52,7 @@
       become: true
 
     - name: Get credentials for the GKE cluster
-      shell: gcloud container clusters get-credentials innotest-cluster --region=us-central1 --project=goldengate-1
+      shell:  gcloud container clusters get-credentials innotest-cluster --region us-central1-c
       become: true
 
     - name: Deploy Docker image to GKE

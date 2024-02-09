@@ -44,15 +44,6 @@
       shell: gcloud config set project goldengate-1 && gcloud config set compute/zone us-central1-c
       become: true
 
-    - name: Add IAM policy binding for GKE cluster access
-      community.general.gcp_iam_policy:
-        auth_kind: serviceaccount
-        service_account_file: /path/to/your/service/account/keyfile.json
-        project: goldengate-1
-        resource: projects/goldengate-1
-        role: roles/container.admin
-        member: serviceAccount:your-service-account-email@example.com
-
     - name: Get credentials for the GKE cluster
       shell: gcloud container clusters get-credentials innotest-cluster --region us-central1-c
       become: true

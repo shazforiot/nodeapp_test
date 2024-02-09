@@ -51,7 +51,7 @@
         project: goldengate-1
         resource: projects/goldengate-1
         role: roles/container.admin
-        member: serviceAccount: testgcp-sa@goldengate-1.iam.gserviceaccount.com
+        member: serviceAccount:testgcp-sa@goldengate-1.iam.gserviceaccount.com
 
     - name: Get credentials for the GKE cluster
       shell: gcloud container clusters get-credentials innotest-cluster --region us-central1-c

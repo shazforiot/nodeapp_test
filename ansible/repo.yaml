@@ -40,9 +40,9 @@
       command: >
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
-    - name: Set project and zone for GKE
-      shell: gcloud config set project goldengate-1 && gcloud config set compute/zone us-central1-c
-      become: true
+   # - name: Set project and zone for GKE
+   #  shell: gcloud config set project goldengate-1 && gcloud config set compute/zone us-central1-c
+   #   become: true
 
     - name: Get credentials for the GKE cluster
       shell: gcloud container clusters get-credentials innotest-cluster --region us-central1-c

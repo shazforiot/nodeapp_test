@@ -38,7 +38,7 @@
         DOCKER_CLI_EXPERIMENTAL: enabled
 
     - name: Log in to Google Cloud
-      command: gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/cred.json
+      command: gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=cred.json /home/ubuntu/actions-runner/cred.json
 
     - name: Push Docker image to Google Artifact Registry
       command: >

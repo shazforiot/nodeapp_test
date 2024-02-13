@@ -26,10 +26,10 @@
       become: true
  
     - name: Build Docker image
-      command: docker build -t node .
+      command: DOCKER_BUILDKIT=0 docker build -t node .
       args:
-        chdir: /home/ubuntu/actions-runner/Testproject-INNO
- 
+         chdir: /home/ubuntu/actions-runner/Testproject-INNO
+
     - name: Push Docker image to Google Artifact Registry
       command: >
         docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest

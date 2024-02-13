@@ -26,9 +26,10 @@
       become: true
  
     - name: Build Docker image
-      command: env DOCKER_BUILDKIT=0 docker build -t node .
+      command: docker build -t node .
       args:
          chdir: /home/ubuntu/actions-runner/Testproject-INNO
+
 
 
     - name: Push Docker image to Google Artifact Registry

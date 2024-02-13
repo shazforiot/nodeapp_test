@@ -30,27 +30,12 @@
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
-    - name: Push Docker image to Google Artifact Registry
-      command: >
-        docker tag node
-        us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-      environment:
-        DOCKER_CLI_EXPERIMENTAL: enabled
+    - name: Authenticate Docker with Google Artifact Registry
+      command: gcloud auth configure-docker
+      become: true
 
-  #  - name: Log in to Google Cloud
-  #    command: gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/cred.json
+    - name: Tag Docker image for Google Artifact Registry
+      command: docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
     - name: Push Docker image to Google Artifact Registry
-      command: >
-        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-
-    - name: Configure kubectl
-      command: gcloud container clusters get-credentials innotest-cluster --zone us-central1-c
-      environment:
-        CLOUDSDK_CORE_DISABLE_PROMPTS: "true"
-
-    - name: Apply Kubernetes deployment manifest
-      command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/deployment.yaml
-
-    - name: Apply Kubernetes service manifest
-      command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/service.yaml
+      command: docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest

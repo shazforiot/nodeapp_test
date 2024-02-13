@@ -25,24 +25,16 @@
         version: main  # replace 'main' with your branch name if different
       become: true
 
-    - name: Build Docker image
-      command: docker build -t node .
+    - name: Build Docker image using BuildKit
+      command: DOCKER_BUILDKIT=1 docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest .
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
     - name: Push Docker image to Google Artifact Registry
       command: >
-        docker tag node
-        us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
       environment:
         DOCKER_CLI_EXPERIMENTAL: enabled
-
-    - name: Log in to Google Cloud
-      command: gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/cred.json
-
-    - name: Push Docker image to Google Artifact Registry
-      command: >
-        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
     - name: Configure kubectl
       command: gcloud container clusters get-credentials innotest-cluster --zone us-central1-c
@@ -50,6 +42,4 @@
         CLOUDSDK_CORE_DISABLE_PROMPTS: "true"
 
     - name: Apply Kubernetes manifests
-      command: kubectl apply -f deployment.yaml
-               kubectl apply -f service.yaml
-      
+      command: kubectl apply -f deployment.yaml -f service.yaml

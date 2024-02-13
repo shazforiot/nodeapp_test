@@ -39,3 +39,5 @@
 
     - name: Push Docker image to Google Artifact Registry
       command: docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+      ignore_errors: yes  # Ignore errors in case the push fails
+      

@@ -1,14 +1,14 @@
 - name: Git Checkout, Docker Install, Build Image, Push to Artifact Registry, and Deploy to GKE
   hosts: localhost
   gather_facts: false
- 
+
   tasks:
     - name: Ensure git is installed
       become: true
       apt:
         name: git
         state: present
- 
+
     - name: Ensure Docker dependencies are installed
       become: true
       apt:
@@ -17,42 +17,40 @@
       loop:
         - containerd
         - docker.io
- 
+
     - name: Clone Node.js code from GitHub
       git:
         repo: https://github.com/mnagaraju5628/Testproject-INNO.git
         dest: /home/ubuntu/actions-runner/Testproject-INNO
         version: main  # replace 'main' with your branch name if different
       become: true
- 
+
     - name: Build Docker image
       command: docker build -t node .
       args:
-         chdir: /home/ubuntu/actions-runner/Testproject-INNO
-
-
+        chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
     - name: Push Docker image to Google Artifact Registry
       command: >
-        docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+        docker tag node
+        us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
       environment:
         DOCKER_CLI_EXPERIMENTAL: enabled
- 
+
+    - name: Log in to Google Cloud
+      command: gcloud auth activate-service-account testgcp-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/cred.json
+
     - name: Push Docker image to Google Artifact Registry
       command: >
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
- 
-    - name: Set project and zone for GKE
-      shell: gcloud config set project goldengate-1 && gcloud config set compute/zone us-central1-c
-      become: true
- 
-    - name: Get credentials for the GKE cluster
-      shell:  gcloud container clusters get-credentials innotest-cluster --region us-central1-c
-      become: true
- 
-    - name: Deploy Docker image to GKE
-      command: kubectl apply -f deployment.yaml
-      become: true
-    - name: Deploy Docker image to GKE
-      command: kubectl apply -f service.yaml
-      become: true
+
+    - name: Configure kubectl
+      command: gcloud container clusters get-credentials innotest-cluster --zone us-central1-c
+      environment:
+        CLOUDSDK_CORE_DISABLE_PROMPTS: "true"
+
+    - name: Apply Kubernetes deployment manifest
+      command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/deployment.yaml
+
+    - name: Apply Kubernetes service manifest
+      command: kubectl apply -f /home/ubuntu/actions-runner/Testproject-INNO/service.yaml

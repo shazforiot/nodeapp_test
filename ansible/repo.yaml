@@ -1,3 +1,6 @@
+253701001460
+
+
 - name: Git Checkout, Docker Install, Build Image, Push to Artifact Registry, and Deploy to GKE
   hosts: localhost
   gather_facts: false
@@ -25,19 +28,25 @@
         version: main  # replace 'main' with your branch name if different
       become: true
 
-    - name: Build Docker image
-      command: docker build -t node .
-      args:
-        chdir: /home/ubuntu/actions-runner/Testproject-INNO
-
-    - name: Authenticate Docker with Google Artifact Registry
-      command: gcloud auth configure-docker
+    - name: Build Docker Image
+      command: docker build -t node . /home/ubuntu/actions-runner/Testproject-INNO
       become: true
 
-    - name: Tag Docker image for Google Artifact Registry
-      command: docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+    - name: Ensure Docker Image is built successfully
+      command: docker images node
+      register: docker_image_check
+      become: true
+    #  failed_when: docker_image_check.rc != 0
 
-    - name: Push Docker image to Google Artifact Registry
+    - name: Tag Docker Image
+      command: docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+      become: true
+
+    - name: Push Docker Image to Artifact Registry
       command: docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-      ignore_errors: yes  # Ignore errors in case the push fails
-      
+      become: true
+
+    # Additional tasks for GKE deployment
+
+
+   

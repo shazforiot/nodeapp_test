@@ -42,5 +42,7 @@
     - name: Push Docker Image to Artifact Registry
       command: docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
       become: true
+      environment:
+        DOCKER_CONFIG: /root/.docker  # Set Docker config directory to root user's home to ensure gcloud credential is used
 
     # Additional tasks for GKE deployment

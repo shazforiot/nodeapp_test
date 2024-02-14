@@ -29,11 +29,10 @@
       command: docker build -t node . /home/ubuntu/actions-runner/Testproject-INNO
       become: true
 
-    - name: Ensure Docker Image is built successfully
-      command: docker images node
-      register: docker_image_check
-      become: true
-    #  failed_when: docker_image_check.rc != 0
+    - name: Build Docker image
+      command: docker build -t node .
+      args:
+        chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
     - name: Tag Docker Image
       command: docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest

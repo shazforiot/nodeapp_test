@@ -25,16 +25,15 @@
         version: main  # replace 'main' with your branch name if different
       become: true
 
-#   - name: Build Docker Image
-#     command: docker build -t node . /home/ubuntu/actions-runner/Testproject-INNO
-#     become: true
-
     - name: Build Docker Image
       command: docker build -t node .
       args:
-         chdir: /home/ubuntu/actions-runner/Testproject-INNO
+        chdir: /home/ubuntu/actions-runner/Testproject-INNO
       become: true
 
+    - name: Authenticate Docker with Google Cloud
+      command: gcloud auth configure-docker --quiet
+      become: true
 
     - name: Tag Docker Image
       command: docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
@@ -45,6 +44,3 @@
       become: true
 
     # Additional tasks for GKE deployment
-
-
-   

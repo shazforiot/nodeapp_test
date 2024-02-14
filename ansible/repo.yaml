@@ -30,7 +30,7 @@
 #     become: true
 
     - name: Build Docker Image
-      command: docker build -t my-docker-image .
+      command: docker build -t node .
       args:
          chdir: /home/ubuntu/actions-runner/Testproject-INNO
       become: true

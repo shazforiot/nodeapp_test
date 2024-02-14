@@ -30,10 +30,11 @@
 #     become: true
 
     - name: Build Docker Image
-      command: docker build -t node 
+      command: docker build -t my-docker-image .
       args:
-        chdir: /home/ubuntu/actions-runner/Testproject-INNO
+         chdir: /home/ubuntu/actions-runner/Testproject-INNO
       become: true
+
 
     - name: Tag Docker Image
       command: docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest

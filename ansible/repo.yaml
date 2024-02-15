@@ -30,9 +30,13 @@
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
-    - name: Authenticate Docker with Google Artifact Registry
+    - name: Authenticate Docker with Google Cloud SDK
       become: true
-      shell: gcloud auth configure-docker
+      environment:
+        CLOUDSDK_CONFIG: /home/ubuntu/.config/gcloud
+      shell: |
+        gcloud auth activate-service-account --key-file=/home/ubuntu/actions-runner/Testproject-INNOt-cred.json
+        gcloud auth configure-docker
 
     - name: Tag Docker image for Google Artifact Registry
       become: true

@@ -1,21 +1,22 @@
 - name: Trigger GitHub Actions workflow
   hosts: localhost
   gather_facts: false
+  vars:
+    OWNER: "mnagaraju"
+    REPO: "Testproject-INNO"
+    WORKFLOW_FILE: "nodejs.yml"
+    YOUR_GITHUB_TOKEN: "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"
   tasks:
     - name: Trigger GitHub Actions workflow
       uri:
         url: "https://api.github.com/repos/{{ OWNER }}/{{ REPO }}/actions/workflows/{{ WORKFLOW_FILE }}/dispatches"
         method: POST
         headers:
-          Authorization: "token {{ PAT }}"
+          Authorization: "token {{ YOUR_GITHUB_TOKEN }}"
           Accept: "application/vnd.github.v3+json"
           Content-Type: "application/json"
         body_format: json
         body:
           ref: "main"
           inputs: {}  # If your workflow file has inputs, you can specify them here
-      environment:
-        OWNER: "mnagaraju"  # Replace with your GitHub username or organization name
-        REPO: "Testproject-INNO"  # Replace with the name of your GitHub repository (without the full URL)
-        WORKFLOW_FILE: "nodejs.yml"  # Replace with the name of your workflow file
       delegate_to: localhost

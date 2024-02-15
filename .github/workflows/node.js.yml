@@ -1,119 +1,27 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-name: Build and Deploy
+name: Build and Push Docker Image
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main  # Trigger the workflow on pushes to the main branch
 
 jobs:
-  build:
+  build_and_push_docker_image:
     runs-on: self-hosted
-    defaults:
-      run:
-        shell: bash -l {0}
-    
-    strategy:
-      matrix:
-        node-version: [14.x]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+      - name: Install Ansible
+        run: sudo apt update && sudo apt install -y ansible
 
-    - name: Install dependencies and build
-      run: |
-        npm ci
-        npm run build --if-present
+      - name: Install Docker dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y containerd docker.io
 
-    - name: Setup Ansible and Run Ansible playbook
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y ansible
-        ansible-playbook -i "localhost," -c local ansible/repo.yaml -K
-  #  - name: Install the gcloud CLI
-  #    uses: google-github-actions/setup-gcloud@v0.2.0
-  #    with:
-  #          project_id: ${{ secrets.GOOGLE_PROJECT }}
-  #          service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-  #          install_components: 'gke-gcloud-auth-plugin'
-  #          export_default_credentials: true
-
-    - name: Build and Push Docker Image
-      run: |
-        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
-        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-    
-   # - name: Deploy to GKE
-   #    run: |
-   #     gcloud container clusters get-credentials innotest-cluster --region us-central1-c
-   #     kubectl rollout restart deployment nodeapp-deployment 
-   #     kubectl apply -f deployment.yaml 
-   #     kubectl apply -f service.yaml 
-
-
-
-
-
-
-
-
-        
-      
-
-
-
-
-
-
-
-      
-
-    
-
-      
-
-   #   - name: Use Node.js ${{ matrix.node-version }}
-   #     uses: actions/setup-node@v3
-   #     with:
-   #       node-version: ${{ matrix.node-version }}
-   #       cache: 'npm'
-
-   #   - run: npm ci
-
-   #   - run: npm run build --if-present
-
-   #   - run: npm install
-
-   #   - name: Install the gcloud CLI
-   #     uses: google-github-actions/setup-gcloud@v0.2.0
-   #     with:
-   #       project_id: ${{ secrets.GOOGLE_PROJECT }}
-   #       service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-   #       install_components: 'gke-gcloud-auth-plugin'
-   #       export_default_credentials: true
-
-   #   - name: Build and push the Docker image
-   #     env:
-   #       GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-   #     run: |
-   #       gcloud auth configure-docker us-central1-docker.pkg.dev
-   #       docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest .
-   #       docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-
-   #   - name: Deploy to GKE
-   #     env:
-   #       GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-   #    run: |
-   #      gcloud container clusters get-credentials innotest-cluster --region us-central1-c
-   #       kubectl rollout restart deployment nodeapp-deployment 
-   #      kubectl apply -f deployment.yaml
-   #       kubectl apply -f service.yaml
+      - name: Run Ansible playbook to build Docker image
+        run: ansible-playbook ansible/repo.yaml
+        env:
+          PAT: ${{ secrets.PAT }}  # Required for Ansible to access the repository

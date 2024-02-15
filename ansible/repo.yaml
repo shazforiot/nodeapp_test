@@ -30,6 +30,10 @@
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
+    - name: Authenticate Docker with Google Artifact Registry
+      become: true
+      shell: gcloud auth configure-docker
+
     - name: Tag Docker image for Google Artifact Registry
       become: true
       command: docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest

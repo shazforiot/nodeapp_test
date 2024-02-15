@@ -1,22 +1,45 @@
-- name: Trigger GitHub Actions workflow
+---
+- name: Deploy Node.js Application to Google Artifact Registry
   hosts: localhost
   gather_facts: false
+
   vars:
-    OWNER: "mnagaraju"
-    REPO: "Testproject-INNO"
-    WORKFLOW_FILE: "nodejs.yml"
-    YOUR_GITHUB_TOKEN: "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"  # Update this with your GitHub Personal Access Token
+    # Define variables for your project
+    git_repo: "https://github.com/mnagaraju5628/Testproject-INNO.git"
+    git_version: "main"  # Or specify a branch or tag
+    app_directory: "/home/ubuntu/actions-runner/Testproject-INNO"
+    artifact_registry_project_id: "goldengate-1"
+    artifact_registry_repository: "test-project"
+    docker_image_name: "node"
+    docker_image_tag: "latest"
+    gcp_service_account_key_file: "/home/ubuntu/actions-runner/Testproject-INNO/cred.json"
+
   tasks:
-    - name: Trigger GitHub Actions workflow
-      uri:
-        url: "https://api.github.com/repos/{{ OWNER }}/{{ REPO }}/actions/workflows/{{ WORKFLOW_FILE }}/dispatches"
-        method: POST
-        headers:
-          Authorization: "token {{ YOUR_GITHUB_TOKEN }}"
-          Accept: "application/vnd.github.v3+json"
-          Content-Type: "application/json"
-        body_format: json
-        body:
-          ref: "main"
-          inputs: {}  # If your workflow file has inputs, you can specify them here
-      delegate_to: localhost
+    - name: Checkout Node.js Application from Git
+      git:
+        repo: "{{ git_repo }}"
+        dest: "{{ app_directory }}"
+        version: "{{ git_version }}"
+
+    - name: Install Node.js Dependencies
+      npm:
+        path: "{{ app_directory }}"
+        state: present
+
+    - name: Build Docker Image
+      docker_image:
+        name: "{{ docker_image_name }}"
+        path: "{{ app_directory }}"
+        tag: "{{ docker_image_tag }}"
+
+    - name: Configure gcloud CLI
+      environment:
+        CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE: "{{ gcp_service_account_key_file }}"
+      become: true
+      command: "gcloud auth activate-service-account --key-file={{ gcp_service_account_key_file }}"
+
+    - name: Tag Docker Image for Artifact Registry
+      command: "docker tag {{ docker_image_name }}:{{ docker_image_tag }} gcr.io/{{ artifact_registry_project_id }}/{{ artifact_registry_repository }}/{{ docker_image_name }}:{{ docker_image_tag }}"
+
+    - name: Push Docker Image to Google Artifact Registry
+      command: "docker push gcr.io/{{ artifact_registry_project_id }}/{{ artifact_registry_repository }}/{{ docker_image_name }}:{{ docker_image_tag }}"

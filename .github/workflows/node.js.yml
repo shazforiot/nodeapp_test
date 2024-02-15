@@ -23,6 +23,5 @@ jobs:
 
       - name: Run Ansible playbook to build Docker image
         run: ansible-playbook ansible/repo.yaml
- #       env:
- #         PAT: ${{ secrets.PAT }}  # Required for Ansible to access the repository
-
+        env:
+          PAT: ${{ secrets.PAT }}  # Required for Ansible to access the repository

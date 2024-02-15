@@ -5,14 +5,14 @@
     OWNER: "mnagaraju"
     REPO: "Testproject-INNO"
     WORKFLOW_FILE: "nodejs.yml"
-    YOUR_GITHUB_TOKEN: "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"
+    YOUR_GITHUB_TOKEN: "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"  # Update this with your GitHub Personal Access Token
   tasks:
     - name: Trigger GitHub Actions workflow
       uri:
         url: "https://api.github.com/repos/{{ OWNER }}/{{ REPO }}/actions/workflows/{{ WORKFLOW_FILE }}/dispatches"
         method: POST
         headers:
-          Authorization: "token {{ YOUR_GITHUB_TOKEN }}"
+          Authorization: "token {{ PAT }}"
           Accept: "application/vnd.github.v3+json"
           Content-Type: "application/json"
         body_format: json

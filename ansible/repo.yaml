@@ -43,7 +43,6 @@
         - GOOGLE_PROJECT
 
     - name: Install the gcloud cli
-     # community.general.gcp_auth:
         service_account_file: "{{ lookup('env', 'GOOGLE_APPLICATION_CREDENTIALS') }}"
         project_id: "{{ lookup('env', 'GOOGLE_PROJECT') }}"
         export_default_credentials: true

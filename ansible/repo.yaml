@@ -5,6 +5,20 @@
   become: yes
 
   tasks:
+    - name: Ensure git is installed
+      become: true
+      apt:
+        name: git
+        state: present
+
+    - name: Ensure Docker dependencies are installed
+      become: true
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - containerd
+        - docker.io
     - name: Checkout repository
       ansible.builtin.git:
         repo: "https://github.com/mnagaraju5628/Testproject-INNO.git"
@@ -12,29 +26,7 @@
         version: main
       register: checkout
 
-    # Remaining tasks...
-
-
-    - name: Use Node.js 14.x
-      shell: |
-        curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-        sudo apt-get install -y nodejs
-        sudo npm install -g npm@latest
-
-    - name: Install dependencies
-      shell: npm ci
-      args:
-        chdir: /home/ubuntu/actions-runner/Testproject-INNO
-
-    - name: Run build script if present
-      shell: npm run build --if-present
-      args:
-        chdir: /home/ubuntu/actions-runner/Testproject-INNO
-
-    - name: Install npm packages
-      shell: npm install
-      args:
-        chdir: /home/ubuntu/actions-runner/Testproject-INNO
+    # Remaining tasks..
 
     - name: Set gcloud account
       shell: gcloud config set account inno-test-sa@goldengate-1.iam.gserviceaccount.com

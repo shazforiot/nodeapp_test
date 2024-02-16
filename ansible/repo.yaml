@@ -12,28 +12,28 @@
       register: checkout
 
     - name: Use Node.js 14.x
-      ansible.builtin.shell: |
+      shell: |
         curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
         sudo apt-get install -y nodejs
         sudo npm install -g npm@latest
 
     - name: Install dependencies
-      ansible.builtin.shell: npm ci
+      shell: npm ci
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
     - name: Run build script if present
-      ansible.builtin.shell: npm run build --if-present
+      shell: npm run build --if-present
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
     - name: Install npm packages
-      ansible.builtin.shell: npm install
+      shell: npm install
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
     - name: Set gcloud account
-      ansible.builtin.shell: gcloud config set account inno-test-sa@goldengate-1.iam.gserviceaccount.com
+      shell: gcloud config set account inno-test-sa@goldengate-1.iam.gserviceaccount.com
 
     - name: Install the gcloud cli
       community.general.gcp_auth:
@@ -42,7 +42,7 @@
         export_default_credentials: true
 
     - name: Build and push the docker image
-      ansible.builtin.shell: |
+      shell: |
         gcloud auth configure-docker us-central1-docker.pkg.dev
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest .
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
@@ -52,7 +52,7 @@
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
     - name: Deploy to GKE
-      ansible.builtin.shell: |
+      shell: |
         gcloud container clusters get-credentials innotest-cluster --region us-central1-c
         kubectl rollout restart deployment nodeapp-deployment 
         kubectl apply -f deployment.yaml

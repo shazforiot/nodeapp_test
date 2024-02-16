@@ -20,7 +20,7 @@
     - name: Install dependencies
       ansible.builtin.shell: npm ci
       args:
-        chdir: /path/to/your/repository
+        chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
     - name: Run build script if present
       ansible.builtin.shell: npm run build --if-present

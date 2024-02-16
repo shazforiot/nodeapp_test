@@ -1,7 +1,9 @@
 ---
+---
 - name: Run Node.js CI workflow
   hosts: localhost
   gather_facts: false
+  become: yes
 
   tasks:
     - name: Checkout repository
@@ -10,6 +12,9 @@
         dest: /home/ubuntu/actions-runner/Testproject-INNO
         version: main
       register: checkout
+
+    # Remaining tasks...
+
 
     - name: Use Node.js 14.x
       shell: |

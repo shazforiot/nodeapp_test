@@ -1,5 +1,4 @@
 ---
----
 - name: Run Node.js CI workflow
   hosts: localhost
   gather_facts: false

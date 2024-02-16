@@ -1,61 +1,63 @@
-- name: Git Checkout, Docker Install, Build Image, Push to Artifact Registry, and Deploy to GKE
+---
+- name: Run Node.js CI workflow
   hosts: localhost
   gather_facts: false
+
   tasks:
-    - name: Ensure git is installed
-      become: true
-      apt:
-        name: git
-        state: present
-
-    - name: Ensure Docker dependencies are installed
-      become: true
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - containerd
-        - docker.io
-
-    - name: Clone Node.js code from GitHub
-      git:
-        repo: https://github.com/mnagaraju5628/Testproject-INNO.git
+    - name: Checkout repository
+      ansible.builtin.git:
+        repo: "https://github.com/mnagaraju5628/Testproject-INNO.git"
         dest: /home/ubuntu/actions-runner/Testproject-INNO
-        version: main  # replace 'main' with your branch name if different
-      become: true
+        version: main
+      register: checkout
 
-    - name: Build Docker image
-      become: true
-      command: docker build -t node .
+    - name: Use Node.js 14.x
+      ansible.builtin.shell: |
+        curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+        sudo npm install -g npm@latest
+
+    - name: Install dependencies
+      ansible.builtin.shell: npm ci
+      args:
+        chdir: /path/to/your/repository
+
+    - name: Run build script if present
+      ansible.builtin.shell: npm run build --if-present
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
-  #  - name: Authenticate Docker with Google Cloud SDK
-  #    become: true
-  #    shell: gcloud auth activate-service-account inno-test-sa@goldengate-1.iam.gserviceaccount.com --key-file=cred.json
+    - name: Install npm packages
+      ansible.builtin.shell: npm install
+      args:
+        chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
-    - name: Tag Docker image for Google Artifact Registry
-      become: true
-      command: docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+    - name: Set gcloud account
+      ansible.builtin.shell: gcloud config set account inno-test-sa@goldengate-1.iam.gserviceaccount.com
+
+    - name: Install the gcloud cli
+      community.general.gcp_auth:
+        service_account_file: "{{ lookup('env', 'GOOGLE_APPLICATION_CREDENTIALS') }}"
+        project_id: "{{ lookup('env', 'GOOGLE_PROJECT') }}"
+        export_default_credentials: true
+
+    - name: Build and push the docker image
+      ansible.builtin.shell: |
+        gcloud auth configure-docker us-central1-docker.pkg.dev
+        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest .
+        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
       environment:
-        DOCKER_CLI_EXPERIMENTAL: enabled
+        GOOGLE_PROJECT: "{{ lookup('env', 'GOOGLE_PROJECT') }}"
+      args:
+        chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
-    - name: Push Docker image to Google Artifact Registry
-      become: true
-      command: docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-
-    - name: Set project and zone for GKE
-      become: true
-      shell: gcloud config set project goldengate-1 && gcloud config set compute/zone us-central1-c
-
-    - name: Get credentials for the GKE cluster
-      become: true
-      shell: gcloud container clusters get-credentials innotest-cluster --region us-central1-c
-
-    - name: Deploy Docker image to GKE (deployment)
-      become: true
-      command: kubectl apply -f deployment.yaml
-
-    - name: Deploy Docker image to GKE (service)
-      become: true
-      command: kubectl apply -f service.yaml
+    - name: Deploy to GKE
+      ansible.builtin.shell: |
+        gcloud container clusters get-credentials innotest-cluster --region us-central1-c
+        kubectl rollout restart deployment nodeapp-deployment 
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml
+      environment:
+        GOOGLE_PROJECT: "{{ lookup('env', 'GOOGLE_PROJECT') }}"
+      args:
+        chdir: /home/ubuntu/actions-runner/Testproject-INNO

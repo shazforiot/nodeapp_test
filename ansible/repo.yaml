@@ -19,6 +19,7 @@
       loop:
         - containerd
         - docker.io
+
     - name: Checkout repository
       ansible.builtin.git:
         repo: "https://github.com/mnagaraju5628/Testproject-INNO.git"
@@ -38,9 +39,6 @@
       shell: |
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest .
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-      environment:
-        GOOGLE_APPLICATION_CREDENTIALS: $GOOGLE_APPLICATION_CREDENTIALS
-        GOOGLE_PROJECT: $GOOGLE_PROJECT
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
 

@@ -35,25 +35,16 @@
     - name: Set gcloud account
       shell: gcloud config set account inno-test-sa@goldengate-1.iam.gserviceaccount.com
 
-    - name: Debug environment variables
-      ansible.builtin.debug:
-        var: item
-      with_items:
-        - GOOGLE_APPLICATION_CREDENTIALS
-        - GOOGLE_PROJECT
-
-    - name: Install the gcloud cli
-        service_account_file: "{{ lookup('env', 'GOOGLE_APPLICATION_CREDENTIALS') }}"
-        project_id: "{{ lookup('env', 'GOOGLE_PROJECT') }}"
-        export_default_credentials: true
+    - name: Authenticate Docker with gcloud
+      shell: gcloud auth configure-docker us-central1-docker.pkg.dev
 
     - name: Build and push the docker image
       shell: |
-        gcloud auth configure-docker us-central1-docker.pkg.dev
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest .
         docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
       environment:
-        GOOGLE_PROJECT: "{{ lookup('env', 'GOOGLE_PROJECT') }}"
+        GOOGLE_APPLICATION_CREDENTIALS: $GOOGLE_APPLICATION_CREDENTIALS
+        GOOGLE_PROJECT: $GOOGLE_PROJECT
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
@@ -64,6 +55,6 @@
         kubectl apply -f deployment.yaml
         kubectl apply -f service.yaml
       environment:
-        GOOGLE_PROJECT: "{{ lookup('env', 'GOOGLE_PROJECT') }}"
+        GOOGLE_PROJECT: $GOOGLE_PROJECT
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO

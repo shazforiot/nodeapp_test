@@ -35,6 +35,13 @@
     - name: Set gcloud account
       shell: gcloud config set account inno-test-sa@goldengate-1.iam.gserviceaccount.com
 
+    - name: Debug environment variables
+      ansible.builtin.debug:
+        var: item
+      with_items:
+        - GOOGLE_APPLICATION_CREDENTIALS
+        - GOOGLE_PROJECT
+
     - name: Install the gcloud cli
       community.general.gcp_auth:
         service_account_file: "{{ lookup('env', 'GOOGLE_APPLICATION_CREDENTIALS') }}"

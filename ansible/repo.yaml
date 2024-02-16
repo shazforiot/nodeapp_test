@@ -32,7 +32,7 @@
 
     - name: Authenticate Docker with Google Cloud SDK
       become: true
-      shell: gcloud auth activate-service-account inno-test-sa@goldengate-1.iam.gserviceaccount.com --key-file= cred.json && gcloud auth configure-docker
+      shell: gcloud auth activate-service-account inno-test-sa@goldengate-1.iam.gserviceaccount.com --key-file=cred.json
 
     - name: Tag Docker image for Google Artifact Registry
       become: true

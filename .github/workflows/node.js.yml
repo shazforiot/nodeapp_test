@@ -42,8 +42,8 @@ jobs:
   #      curl -sSL https://sdk.cloud.google.com | bash
   #      exec -l $SHELL
   #      gcloud components install kubectl --quiet
-    - name: Build and Push Docker Image
-      run: |
-        gcloud auth configure-docker us-central1-docker.pkg.dev
-        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
-        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+  #  - name: Build and Push Docker Image
+  #    run: |
+  #      gcloud auth configure-docker us-central1-docker.pkg.dev
+  #      docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
+  #      docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest

@@ -41,7 +41,7 @@
 
     - name: Authenticate with service account key
       become: true
-      command: "gcloud auth activate-service-account --key-file=/home/ubuntu/actions-runner/Testproject-INNO-cred.json"
+      command: "gcloud auth activate-service-account inno-test-sa@goldengate-1.iam.gserviceaccount.com --key-file=cred.json"
       environment:
         CLOUDSDK_CORE_DISABLE_PROMPTS: "1"
 

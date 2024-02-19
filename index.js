@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 
 app.get('/', function (req, res) {
-    res.send('{ "response": "Welcome to Node application" }');
+    res.send('{ "response": "Welcome to INNODATA" }');
 });
 
 app.get('/will', function (req, res) {

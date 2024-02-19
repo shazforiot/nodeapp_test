@@ -1,33 +1,39 @@
-- name: Git Checkout, Docker Install, Build Image, Push to Artifact Registry, and Deploy to GKE
+---
+- name: Build and Deploy
   hosts: localhost
   gather_facts: false
+
   tasks:
-    - name: Ensure git is installed
-      become: true
-      apt:
-        name: git
-        state: present
- 
-    - name: Ensure Docker dependencies are installed
-      become: true
-      apt:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - containerd
-        - docker.io
- 
-    - name: Clone Node.js code from GitHub
+    - name: Checkout code
       git:
-        repo: https://github.com/mnagaraju5628/Testproject-INNO.git
+        repo: https://github.com/yourusername/yourrepository.git
         dest: /home/ubuntu/actions-runner/Testproject-INNO
-        version: main  # replace 'main' with your branch name if different
+        version: main
       become: true
- 
-    - name: Build Docker image
-      command: docker build -t node .
+
+    - name: Set up Node.js
+      ansible.builtin.shell: |
+        curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+        sudo apt-get install -y nodejs
+      become: true
+
+    - name: Install dependencies and build
+      ansible.builtin.command: npm ci && npm run build --if-present && npm install
       args:
         chdir: /home/ubuntu/actions-runner/Testproject-INNO
+
+    - name: Setup Docker authentication
+      ansible.builtin.command: gcloud auth configure-docker us-central1-docker.pkg.dev
+      become: true
+
+    - name: Build Docker Image
+      ansible.builtin.command: docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
+      become: true
+
+    - name: Push Docker Image
+      ansible.builtin.command: docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+      become: true
+
  
  #   - name: Push Docker image to Google Artifact Registry
  #     command: >

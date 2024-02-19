@@ -26,24 +26,24 @@
         version: main
       become: true
 
-    - name: Download gcloud CLI install script
-      get_url:
-        url: https://dl.google.com/dl/cloudsdk/channels/rapid/install_google_cloud_sdk.bash
-        dest: /tmp/install_google_cloud_sdk.bash
-        mode: u+x
-      become: true
+ #   - name: Download gcloud CLI install script
+ #     get_url:
+ #      url: https://dl.google.com/dl/cloudsdk/channels/rapid/install_google_cloud_sdk.bash
+ #       dest: /tmp/install_google_cloud_sdk.bash
+ #       mode: u+x
+ #     become: true
 
-    - name: Run gcloud CLI install script
-      command: "/tmp/install_google_cloud_sdk.bash"
-      become: true
-      args:
-        creates: /usr/bin/gcloud  # Skip if already installed
+ #   - name: Run gcloud CLI install script
+ #     command: "/tmp/install_google_cloud_sdk.bash"
+ #     become: true
+ #     args:
+ #       creates: /usr/bin/gcloud  # Skip if already installed
 
-    - name: Authenticate with service account key
-      become: true
-      command: "gcloud auth activate-service-account inno-test-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/Testproject-INNO/cred.json"
-      environment:
-        CLOUDSDK_CORE_DISABLE_PROMPTS: "1"
+ #   - name: Authenticate with service account key
+ #     become: true
+ #     command: "gcloud auth activate-service-account inno-test-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/Testproject-INNO/cred.json"
+ #     environment:
+ #       CLOUDSDK_CORE_DISABLE_PROMPTS: "1"
 
     - name: Build Docker image
       command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"

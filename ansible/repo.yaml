@@ -1,3 +1,4 @@
+---
 - name: Git Checkout, Docker Install, Build Image, and Push to Artifact Registry
   hosts: localhost
   gather_facts: false
@@ -22,10 +23,18 @@
       git:
         repo: https://github.com/mnagaraju5628/Testproject-INNO.git
         dest: /home/ubuntu/actions-runner/Testproject-INNO
-        version: main  # replace 'main' with your branch name if different
+        version: main
       become: true
 
-    # Additional tasks for building Docker image and pushing it to Artifact Registry
+    - name: Authenticate with gcloud
+      command: "gcloud auth login"
+      become: true
+
+    - name: Activate service account if necessary
+      command: "gcloud auth activate-service-account inno-test-sa@goldengate-1.iam.gserviceaccount.com"
+      become: true
+      # Replace ACCOUNT with the service account email
+
     - name: Build Docker image
       command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"
       become: true

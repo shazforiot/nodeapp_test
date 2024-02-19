@@ -31,12 +31,9 @@
 
     - name: Setup Docker authentication
       ansible.builtin.command: gcloud auth configure-docker us-central1-docker.pkg.dev
-      become: true
 
     - name: Build Docker Image
       ansible.builtin.command: docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
-      become: true
 
     - name: Push Docker Image
       ansible.builtin.command: docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-      become: true

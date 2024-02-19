@@ -1,42 +1,35 @@
----
-- name: Build and Deploy
+- name: Git Checkout, Docker Install, Build Image, and Push to Artifact Registry
   hosts: localhost
   gather_facts: false
 
   tasks:
-    - name: Checkout code
+    - name: Ensure git is installed
+      become: true
+      apt:
+        name: git
+        state: present
+
+    - name: Ensure Docker dependencies are installed
+      become: true
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - containerd
+        - docker.io
+
+    - name: Clone Node.js code from GitHub
       git:
-        repo: https://github.com/yourusername/yourrepository.git
+        repo: https://github.com/mnagaraju5628/Testproject-INNO.git
         dest: /home/ubuntu/actions-runner/Testproject-INNO
-        version: main
+        version: main  # replace 'main' with your branch name if different
       become: true
 
-    - name: Set up Node.js
-      ansible.builtin.apt:
-        name: nodejs
-        update_cache: yes
+    # Additional tasks for building Docker image and pushing it to Artifact Registry
+    - name: Build Docker image
+      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"
       become: true
 
-    - name: Install npm
-      ansible.builtin.apt:
-        name: npm
-        update_cache: yes
-      become: true
-
-    - name: Install dependencies and build
-      ansible.builtin.shell:
-        cmd: npm ci && npm run build --if-present && npm install
-        chdir: /home/ubuntu/actions-runner/Testproject-INNO
-      become: true
-
-    - name: Setup Docker authentication
-      ansible.builtin.shell:
-        cmd: gcloud auth configure-docker us-central1-docker.pkg.dev
-      become: true
-
-    - name: Build Docker Image
-      ansible.builtin.command: docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest .
-      
-    - name: Push Docker Image
-      ansible.builtin.command: docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+    - name: Push Docker image to artifact registry
+      command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
       become: true

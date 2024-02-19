@@ -37,12 +37,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ansible
         ansible-playbook -i "localhost," -c local ansible/repo.yaml
-    - name: Install gcloud CLI and kubectl
-      run: |
-        curl -sSL https://sdk.cloud.google.com | bash
-        exec -l $SHELL
-        gcloud components install kubectl --quiet
+  #  - name: Install gcloud CLI and kubectl
+  #    run: |
+  #      curl -sSL https://sdk.cloud.google.com | bash
+  #      exec -l $SHELL
+  #      gcloud components install kubectl --quiet
     - name: Build and Push Docker Image
       run: |
         gcloud auth configure-docker us-central1-docker.pkg.dev
         docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
+        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest

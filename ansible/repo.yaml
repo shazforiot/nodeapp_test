@@ -26,11 +26,18 @@
         version: main
       become: true
 
-    - name: Set up gcloud CLI
+    - name: Download gcloud CLI install script
+      get_url:
+        url: https://dl.google.com/dl/cloudsdk/channels/rapid/install_google_cloud_sdk.bash
+        dest: /tmp/install_google_cloud_sdk.bash
+        mode: u+x
       become: true
-      command: "curl -sSL https://sdk.cloud.google.com | bash"
-      environment:
-        CLOUDSDK_CORE_DISABLE_PROMPTS: "1"
+
+    - name: Run gcloud CLI install script
+      command: "/tmp/install_google_cloud_sdk.bash"
+      become: true
+      args:
+        creates: /usr/bin/gcloud  # Skip if already installed
 
     - name: Authenticate with service account key
       become: true

@@ -12,9 +12,15 @@
       become: true
 
     - name: Set up Node.js
-      ansible.builtin.shell: |
-        curl -fsSL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-        sudo apt-get install -y nodejs
+      ansible.builtin.apt:
+        name: nodejs
+        update_cache: yes
+      become: true
+
+    - name: Install npm
+      ansible.builtin.apt:
+        name: npm
+        update_cache: yes
       become: true
 
     - name: Install dependencies and build
@@ -33,30 +39,3 @@
     - name: Push Docker Image
       ansible.builtin.command: docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
       become: true
-
- 
- #   - name: Push Docker image to Google Artifact Registry
- #     command: >
- #       docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
- #     environment:
- #       DOCKER_CLI_EXPERIMENTAL: enabled
-
- #   - name: Push Docker image to Google Artifact Registry
- #     command: >
- #     docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-
- #   - name: Set project and zone for GKE
- #     shell: gcloud config set project goldengate-1 && gcloud config set compute/zone us-central1-c
- #     become: true
- 
- #   - name: Get credentials for the GKE cluster
- #     shell: gcloud container clusters get-credentials innotest-cluster --region us-central1-c
- #     become: true
- 
- #   - name: Deploy Docker image to GKE
- #     command: kubectl apply -f deployment.yaml
- #     become: true
-
- #   - name: Deploy Docker image to GKE
- #     command: kubectl apply -f service.yaml
- #     become: true

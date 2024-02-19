@@ -1,54 +1,94 @@
----
-- name: Run Node.js CI workflow
+
+- name: Git Checkout, Docker Install, Build Image, Push to Artifact Registry, and Deploy to GKE
+
   hosts: localhost
+
   gather_facts: false
-  become: yes
-
+ 
   tasks:
+
     - name: Ensure git is installed
+
       become: true
+
       apt:
+
         name: git
-        state: present
 
+        state: present
+ 
     - name: Ensure Docker dependencies are installed
+
       become: true
+
       apt:
+
         name: "{{ item }}"
+
         state: present
+
       loop:
+
         - containerd
+
         - docker.io
+ 
+    - name: Clone Node.js code from GitHub
 
-    - name: Checkout repository
-      ansible.builtin.git:
-        repo: "https://github.com/mnagaraju5628/Testproject-INNO.git"
+      git:
+
+        repo: https://github.com/mnagaraju5628/Testproject-INNO.git
+
         dest: /home/ubuntu/actions-runner/Testproject-INNO
-        version: main
-      register: checkout
 
-    # Remaining tasks..
+        version: main  # replace 'main' with your branch name if different
 
-    - name: Set gcloud account
-      shell: gcloud config set account inno-test-sa@goldengate-1.iam.gserviceaccount.com
+      become: true
+ 
+    - name: Build Docker image
 
-    - name: Authenticate Docker with gcloud
-      shell: gcloud auth configure-docker us-central1-docker.pkg.dev
+      command: docker build -t node .
 
-    - name: Build and push the docker image
-      shell: |
-        docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest .
-        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
       args:
-        chdir: /home/ubuntu/actions-runner/Testproject-INNO
 
-    - name: Deploy to GKE
-      shell: |
-        gcloud container clusters get-credentials innotest-cluster --region us-central1-c
-        kubectl rollout restart deployment nodeapp-deployment 
-        kubectl apply -f deployment.yaml
-        kubectl apply -f service.yaml
+        chdir: /home/ubuntu/actions-runner/Testproject-INNO
+ 
+    - name: Push Docker image to Google Artifact Registry
+
+      command: >
+
+        docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+
       environment:
-        GOOGLE_PROJECT: $GOOGLE_PROJECT
-      args:
-        chdir: /home/ubuntu/actions-runner/Testproject-INNO
+
+        DOCKER_CLI_EXPERIMENTAL: enabled
+ 
+    - name: Push Docker image to Google Artifact Registry
+
+      command: >
+
+        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+ 
+    - name: Set project and zone for GKE
+
+      shell: gcloud config set project goldengate-1 && gcloud config set compute/zone us-central1-c
+
+      become: true
+ 
+    - name: Get credentials for the GKE cluster
+
+      shell:  gcloud container clusters get-credentials innotest-cluster --region us-central1-c
+
+      become: true
+ 
+    - name: Deploy Docker image to GKE
+
+      command: kubectl apply -f deployment.yaml
+
+      become: true
+
+    - name: Deploy Docker image to GKE
+
+      command: kubectl apply -f service.yaml
+
+      become: true

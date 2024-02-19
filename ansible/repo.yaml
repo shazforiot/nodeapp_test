@@ -35,7 +35,9 @@
       become: true
 
     - name: Build Docker Image
-      ansible.builtin.command: docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO
+      ansible.builtin.command: docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest .
+      args:
+        chdir: /home/ubuntu/actions-runner/Testproject-INNO
       become: true
 
     - name: Push Docker Image

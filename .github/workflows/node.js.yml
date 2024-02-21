@@ -50,4 +50,4 @@ jobs:
 
     - name: Push Images to Artifact Registry
       run: |
-        docker push us-central1-docker.pkg.dev/goldengate-1/innotest-image/node:latest
+        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest

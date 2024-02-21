@@ -44,9 +44,9 @@ jobs:
         gcloud auth configure-docker
         docker pull gcr.io/goldengate-1/node:latest
 
-  #  - name: Tag Images for Artifact Registry
-  #      run: |
-  #      docker tag gcr.io/goldengate-1/node:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/node:latest
+    - name: Tag Images for Artifact Registry
+      run: |
+        docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
 
     - name: Push Images to Artifact Registry
       run: |

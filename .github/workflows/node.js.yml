@@ -40,7 +40,7 @@ jobs:
 
     - name: Authenticate with Google Cloud
       run: |
-        gcloud auth activate-service-account inno-test-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/Testproject-INNO/cred.json
+        gcloud auth activate-service-account test-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/Testproject-INNO/cred.json
 
     - name: Build Docker image
       run: |

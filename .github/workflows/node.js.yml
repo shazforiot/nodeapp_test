@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
@@ -33,19 +33,22 @@ jobs:
         npm run build --if-present
         npm install
 
-    - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@v0.2.0
-      with:
-        version: 'latest'
-
+   
     - name: Authenticate with Google Cloud
-      run: |
-        gcloud auth activate-service-account test-sa@goldengate-1.iam.gserviceaccount.com --key-file=/home/ubuntu/actions-runner/Testproject-INNO/cred.json
+      uses: google-github-actions/auth@v0.2.0
+      with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Build Docker image
+    - name: Pull Images from GCR
       run: |
-        docker build -t gcr.io/goldengate-1/node:latest /home/ubuntu/actions-runner/Testproject-INNO
+        gcloud auth configure-docker
+        docker pull gcr.io/your-project/node:latest
 
-    - name: Push Docker image to GCR
+    - name: Tag Images for Artifact Registry
       run: |
-        docker push gcr.io/goldengate-1/node:latest
+        docker tag gcr.io/your-project/node:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/node:latest
+
+    - name: Push Images to Artifact Registry
+      run: |
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/node:latest

@@ -32,11 +32,7 @@ jobs:
         npm ci
         npm run build --if-present
         npm install
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-          path: /home/ubuntu/actions-runner/Testproject-INNO
-
+    
     - name: Set up Google Cloud SDK
       uses: google-github-actions/setup-gcloud@main
       with:

@@ -34,18 +34,16 @@ jobs:
         npm install
     
     - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@main
+      uses: google-github-actions/setup-gcloud@v0.2.0
       with:
         version: 'latest'
 
     - name: Configure Docker with gcloud credentials
       run: |
         gcloud auth configure-docker
-
     - name: Build Docker image
       run: |
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/node:latest /home/ubuntu/actions-runner/Testproject-INNO
-
+        docker build -t gcr.io/goldengate-1/node:latest /home/ubuntu/actions-runner/Testproject-INNO
     - name: Push Docker image to GCR
       run: |
-        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/node:latest
+        docker push gcr.io/goldengate-1/node:latest

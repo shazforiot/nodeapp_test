@@ -59,15 +59,6 @@ jobs:
     
           # Iterate through each image
           for IMAGE in $IMAGES; do
-              # Pull the image with the "latest" tag from GCR
-              docker pull "$IMAGE:latest"
-              # Tag the image with Artifact Registry details
-              ARTIFACT_TAG="gcr.io/$GCR_PROJECT_ID/$IMAGE:latest"
-              ARTIFACT_TARGET="gcr.io/$ARTIFACT_PROJECT_ID/$ARTIFACT_REPO_NAME/$IMAGE:latest"
-              docker tag "$ARTIFACT_TAG" "$ARTIFACT_TARGET"
-              # Push the image to Artifact Registry
-              docker push "$ARTIFACT_TARGET"
-        
               # Get a list of tags for the current image (excluding "latest") from GCR
               TAGS=$(gcloud container images list-tags $IMAGE --project=$GCR_PROJECT_ID --format='get(tags)' | grep -v latest || true)
         
@@ -76,10 +67,17 @@ jobs:
                   # Pull the image with the current tag from GCR
                   docker pull "$IMAGE:$TAG"
                   # Tag the image with Artifact Registry details
-                  ARTIFACT_TAG="gcr.io/$GCR_PROJECT_ID/$IMAGE:$TAG"
                   ARTIFACT_TARGET="gcr.io/$ARTIFACT_PROJECT_ID/$ARTIFACT_REPO_NAME/$IMAGE:$TAG"
-                  docker tag "$ARTIFACT_TAG" "$ARTIFACT_TARGET"
+                  docker tag "$IMAGE:$TAG" "$ARTIFACT_TARGET"
                   # Push the image to Artifact Registry
                   docker push "$ARTIFACT_TARGET"
               done
+
+              # Pull the image with the "latest" tag from GCR
+              docker pull "$IMAGE:latest"
+              # Tag the image with Artifact Registry details
+              ARTIFACT_TARGET="gcr.io/$ARTIFACT_PROJECT_ID/$ARTIFACT_REPO_NAME/$IMAGE:latest"
+              docker tag "$IMAGE:latest" "$ARTIFACT_TARGET"
+              # Push the image to Artifact Registry
+              docker push "$ARTIFACT_TARGET"
           done

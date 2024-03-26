@@ -52,8 +52,8 @@ jobs:
       - name: Tag and push images to Artifact Registry
         run: |
           # Tag and push each pulled image to Artifact Registry
-          for IMAGE in $(docker images --format '{{.teshost-gcr}}:{{.Tag}}' | grep "gcr.io/$PROJECT_ID"); do
-              ARTIFACT_IMAGE=$(echo $IMAGE | sed 's#gcr.io/#us-central1-docker.pkg.dev/'"${{ secrets.ARTIFACT_PROJECT_ID }}"'/#')
+          for IMAGE in $(docker images --format '{{.Repository}}:{{.Tag}}' | grep "gcr.io/$PROJECT_ID"); do
+              ARTIFACT_IMAGE=$(echo $IMAGE | sed 's#gcr.io/#us-central1-docker.pkg.dev/'"${{ secrets.ARTIFACT_PROJECT_ID }}/$PROJECT_ID/testhost-gcr"#')
               docker tag $IMAGE $ARTIFACT_IMAGE
               docker push $ARTIFACT_IMAGE
           done

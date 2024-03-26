@@ -43,7 +43,7 @@ jobs:
       - name: Push images to Artifact Registry
         run: |
           REPOSITORY="testhost-gcr"
-          IMAGES=$(gcloud container images list-tags us-central1-docker.pkg.dev/goldengate-1/$REPOSITORY --format='get(digest)')
+          docker tag us-central1-docker.pkg.dev/goldengate-1/testhost-gcr
           for IMAGE in $IMAGES; do
-              docker push us-central1-docker.pkg.dev/goldengate-1/$REPOSITORY@$IMAGE
+              docker us-central1-docker.pkg.dev/goldengate-1/testhost-gcr
           done

@@ -17,35 +17,33 @@ jobs:
           service_account_key: ${{ secrets.GCR_SA_KEY }}
           export-access-token: true
 
-      # Step 2: Run script to pull all images from GCR
-      - name: Pull all images from GCR
+      # Step 2: Run the migration script
+      - name: Migrate images
         run: |
           #!/bin/bash
+
           # Set the GCR project ID
-          PROJECT_ID="goldengate-1"  # Replace "your-project-id" with your actual project ID
+          PROJECT_ID="goldengate-1"
+
           # Get a list of all images in the project
-          IMAGES=$(gcloud container images list --project=$PROJECT_ID --format='value(name)')
+          IMAGES=$(gcloud container images list --project="$PROJECT_ID" --format='value(name)')
+
           # Iterate through each image
           for IMAGE in $IMAGES; do
               # Pull the image with the "latest" tag
               docker pull "$IMAGE:latest"
-              # Get a list of tags for the current image (excluding "latest")
-              TAGS=$(gcloud container images list-tags $IMAGE --project=$PROJECT_ID --format='get(tags)' | grep -v latest || true)
-              
-              # Iterate through each tag of the image
-              for TAG in $TAGS; do
-                  # Pull the image with the current tag
-                  docker pull "$IMAGE:$TAG"
-              done
-          done
-      - name: List GCR Images
-        run: |
-          images=$(gcloud container images list --repository=gcr.io/your-project-id --format='value(NAME)')
-          echo "$images" > images.txt
 
-      - name: Tag and Push Images
-        run: |
-          while IFS= read -r image; do
-            docker tag "gcr.io/your-project-id/$image" "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr/$image"
-            docker push "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr/$image"
-          done < images.txt
+              # Get a list of tags for the current image (excluding "latest")
+              TAGS=$(gcloud container images list-tags "$IMAGE" --project="$PROJECT_ID" --format='get(tags)' | grep -v latest || true)
+
+              # Check if there are tags other than "latest"
+              if [ -n "$TAGS" ]; then
+                  # Iterate through each tag of the image
+                  for TAG in $TAGS; do
+                      # Pull the image with the current tag
+                      docker pull "$IMAGE:$TAG"
+                  done
+              else
+                  echo "No tags other than 'latest' found for image $IMAGE"
+              fi
+          done

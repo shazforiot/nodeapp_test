@@ -32,22 +32,14 @@ jobs:
         npm ci
         npm run build --if-present
         npm install
-   
+
     - name: Authenticate with Google Cloud
       uses: google-github-actions/setup-gcloud@v0.2.0
       with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Pull Images from GCR
+    - name: Migrate single project from GCR to Artifact Registry
       run: |
-        gcloud auth configure-docker
-        docker pull gcr.io/goldengate-1/node:latest
-
-    - name: Tag Images for Artifact Registry
-      run: |
-        docker tag node us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
-
-    - name: Push Images to Artifact Registry
-      run: |
-        docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
+        gcloud artifacts docker migrate \
+          --projects=${{ secrets.GCP_PROJECT_ID }}

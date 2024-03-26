@@ -38,23 +38,12 @@ jobs:
                   docker pull "$IMAGE:$TAG"
               done
           done
-
-      # Step 3: Push all images from Artifact Registry repository
-      - name: Push all images to Artifact Registry
+      
+      # Step 3: Push images to Artifact Registry
+      - name: Push images to Artifact Registry
         run: |
-          #!/bin/bash
-
-          # Set the Artifact Registry repository name
           REPOSITORY="testhost-gcr"
-
-          # Authenticate with Artifact Registry
-          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
-
-          # Get a list of all images in the repository
           IMAGES=$(gcloud container images list-tags us-central1-docker.pkg.dev/goldengate-1/$REPOSITORY --format='get(digest)')
-
-          # Iterate through each image
           for IMAGE in $IMAGES; do
-              # Push the image with the current digest
               docker push us-central1-docker.pkg.dev/goldengate-1/$REPOSITORY@$IMAGE
           done

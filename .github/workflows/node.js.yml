@@ -39,7 +39,57 @@ jobs:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Migrate single project from GCR to Artifact Registry
+    name: Build and Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies and build
       run: |
-        gcloud artifacts docker migrate \
-          --projects=${{ secrets.GCP_PROJECT_ID }}
+        npm ci
+        npm run build --if-present
+        npm install
+
+    - name: Authenticate with Google Cloud
+      uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+  migrate-images:
+    runs-on: self-hosted
+
+    steps:
+    - name: Authenticate with Google Cloud
+      uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    - name: Migrate images from GCR to Artifact Registry
+      run: |
+        gcloud auth configure-docker
+        gcloud container images list --format='value(name)' --repository="gcr.io/${{ secrets.GCP_PROJECT_ID }}" | \
+          xargs -L1 -I{} gcloud container images add-tag "gcr.io/${{ secrets.GCP_PROJECT_ID }}/{}/latest" "us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/testhost-gcr/{}:latest"
+

@@ -30,10 +30,14 @@ jobs:
           ARTIFACT_REPO_NAME="testhost-gcr"  # Replace "testhost-gcr" with your actual Artifact Registry repository name
     
           # Authenticate with Docker to Artifact Registry
-          gcloud auth configure-docker -q
+          gcloud auth configure-docker -q || { echo "Failed to authenticate Docker with Artifact Registry"; exit 1; }
     
           # Get a list of all images in the GCR project
           IMAGES=$(gcloud container images list --project=$GCR_PROJECT_ID --format='value(name)')
+          if [ -z "$IMAGES" ]; then
+            echo "No images found in GCR project: $GCR_PROJECT_ID"
+            exit 1
+          fi
     
           # Iterate through each image
           for IMAGE in $IMAGES; do
@@ -49,6 +53,10 @@ jobs:
                   docker tag "$IMAGE:$TAG" "$ARTIFACT_TARGET"
                   # Push the image to Artifact Registry
                   docker push "$ARTIFACT_TARGET"
+                  if [ $? -ne 0 ]; then
+                    echo "Failed to push image $ARTIFACT_TARGET"
+                    exit 1
+                  fi
               done
 
               # Pull the image with the "latest" tag from GCR
@@ -58,4 +66,8 @@ jobs:
               docker tag "$IMAGE:latest" "$ARTIFACT_TARGET"
               # Push the image to Artifact Registry
               docker push "$ARTIFACT_TARGET"
+              if [ $? -ne 0 ]; then
+                echo "Failed to push image $ARTIFACT_TARGET"
+                exit 1
+              fi
           done

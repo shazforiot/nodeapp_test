@@ -21,18 +21,14 @@ jobs:
       - name: Pull all images from GCR
         run: |
           #!/bin/bash
-
           # Set the GCR project ID
           PROJECT_ID="goldengate-1"  # Replace "your-project-id" with your actual project ID
-
           # Get a list of all images in the project
           IMAGES=$(gcloud container images list --project=$PROJECT_ID --format='value(name)')
-
           # Iterate through each image
           for IMAGE in $IMAGES; do
               # Pull the image with the "latest" tag
               docker pull "$IMAGE:latest"
-
               # Get a list of tags for the current image (excluding "latest")
               TAGS=$(gcloud container images list-tags $IMAGE --project=$PROJECT_ID --format='get(tags)' | grep -v latest || true)
               
@@ -41,4 +37,23 @@ jobs:
                   # Pull the image with the current tag
                   docker pull "$IMAGE:$TAG"
               done
+          done
+
+      # Step 3: Authenticate with Artifact Registry
+      - name: Configure Docker CLI for Artifact Registry
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          docker-config: artifact
+          project-id: ${{ secrets.ARTIFACT_PROJECT_ID }}
+          service-account-key: ${{ secrets.ARTIFACT_SA_KEY }}
+          export-access-token: true
+
+      # Step 4: Tag and push all pulled images to Artifact Registry
+      - name: Tag and push images to Artifact Registry
+        run: |
+          # Tag and push each pulled image to Artifact Registry
+          for IMAGE in $(docker images --format '{{.Repository}}:{{.Tag}}' | grep "gcr.io/$PROJECT_ID"); do
+              ARTIFACT_IMAGE=$(echo $IMAGE | sed 's#gcr.io/#us-central1-docker.pkg.dev/'"${{ secrets.ARTIFACT_PROJECT_ID }}"'/#')
+              docker tag $IMAGE $ARTIFACT_IMAGE
+              docker push $ARTIFACT_IMAGE
           done

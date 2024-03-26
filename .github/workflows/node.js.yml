@@ -26,20 +26,12 @@ jobs:
           service-account-key: ${{ secrets.ARTIFACT_SA_KEY }}
           export-access-token: true
       
-      # Step 3: List images from GCR
-      - name: List images from GCR
-        id: list_images
-        run: |
-          gcloud container images list --format='value(name)' > images.txt
-          cat images.txt
-      
-      # Step 4: Migrate each image to Artifact Registry
+      # Step 3: List images from GCR and migrate each image
       - name: Migrate images to Artifact Registry
         run: |
           while IFS= read -r image; do
             echo "Processing image: $image"
-            gcloud container images describe "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" || exit 1
             docker pull "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" || exit 1
-            docker tag "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image" || exit 1
-            docker push "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image" || exit 1
+            docker tag "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr" || exit 1
+            docker push "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr" || exit 1
           done < images.txt

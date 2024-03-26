@@ -38,17 +38,3 @@ jobs:
                   docker pull "$IMAGE:$TAG"
               done
           done
-
-      # Step 3: List GCR Images
-      - name: List GCR Images
-        run: |
-          images=$(gcloud container images list --repository=gcr.io/goldengate-1 --format='value(NAME)')
-          echo "$images" > images.txt
-
-      # Step 4: Tag and Push Images
-      - name: Tag and Push Images
-        run: |
-          while IFS= read -r image; do
-            docker tag "gcr.io/goldengate-1/$image" "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr/$image"
-            docker push "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr/$image"
-          done < images.txt

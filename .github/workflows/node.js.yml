@@ -1,63 +1,46 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-name: Build and Deploy
+name: Migrate All Images to Artifact Registry
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main  # Adjust branch name as needed
 
 jobs:
-  build:
+  migrate:
     runs-on: self-hosted
 
-    strategy:
-      matrix:
-        node-version: [14.x]
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Step 1: Authenticate with GCR
+      - name: Configure Docker CLI for GCR
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          docker-config: gcr
+          project-id: ${{ secrets.GCR_PROJECT_ID }}
+          service-account-key: ${{ secrets.GCR_SA_KEY }}
+      
+      # Step 2: Authenticate with Artifact Registry
+      - name: Configure Docker CLI for Artifact Registry
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          docker-config: artifact
+          project-id: ${{ secrets.ARTIFACT_PROJECT_ID }}
+          service-account-key: ${{ secrets.ARTIFACT_SA_KEY }}
+      
+      # Step 3: List images from GCR
+      - name: List images from GCR
+        id: list_images
+        run: |
+          echo "::set-output name=images::$(gcloud container images list --format='value(name)')"
+      
+      # Step 4: Migrate each image to Artifact Registry
+      - name: Migrate images to Artifact Registry
+        run: |
+          images=(${{ steps.list_images.outputs.images }})
+          for image in "${images[@]}"; do
+            docker pull "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image"
+            docker tag "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image"
+            docker push "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image"
+          done
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-
-    - name: Install dependencies and build
-      run: |
-        npm ci
-        npm run build --if-present
-        npm install
-
-    - name: Authenticate with Google Cloud
-      uses: google-github-actions/setup-gcloud@v0.2.0
-      with:
-        credentials_json: ${{ secrets.GCP_SA_KEY }}
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-
-    - name: Pull, Tag, and Push Images
-      run: |
-        # Define a list of image names
-        images=("gcr.io/goldengate-1/node:latest" "gcr.io/goldengate-1/test-jenkins:32")
-
-        # Authenticate with the destination registry
-        gcloud auth configure-docker
-
-        # Loop through each image in the list
-        for image in "${images[@]}"; do
-          # Pull the image
-          docker pull "$image"
-
-          # Extract the image name and tag
-          image_name=$(echo "$image" | cut -d':' -f1)
-          image_tag=$(echo "$image" | cut -d':' -f2)
-
-          # Tag the image for the destination registry
-          docker tag "$image_name:$image_tag" "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr/$(basename "$image_name"):$image_tag"
-
-          # Push the image to the destination registry
-          docker push "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr/$(basename "$image_name"):$image_tag"
-        done

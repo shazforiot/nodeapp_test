@@ -19,14 +19,36 @@ jobs:
 
       # Step 2: Run script to pull all images from GCR
       - name: Pull all images from GCR
-        run: ./pull_images_from_gcr.sh
+        run: |
+          #!/bin/bash
+          # Set the GCR project ID
+          PROJECT_ID="goldengate-1"  # Replace "your-project-id" with your actual project ID
+          # Get a list of all images in the project
+          IMAGES=$(gcloud container images list --project=$PROJECT_ID --format='value(name)')
+          # Iterate through each image
+          for IMAGE in $IMAGES; do
+              # Pull the image with the "latest" tag
+              docker pull "$IMAGE:latest"
+              # Get a list of tags for the current image (excluding "latest")
+              TAGS=$(gcloud container images list-tags $IMAGE --project=$PROJECT_ID --format='get(tags)' | grep -v latest || true)
+              
+              # Iterate through each tag of the image
+              for TAG in $TAGS; do
+                  # Pull the image with the current tag
+                  docker pull "$IMAGE:$TAG"
+              done
+          done
 
       # Step 3: List GCR Images
       - name: List GCR Images
         run: |
-          gcloud container images list --repository=gcr.io/goldengate-1 --format='value(NAME)' > images.txt
+          images=$(gcloud container images list --repository=gcr.io/goldengate-1 --format='value(NAME)')
+          echo "$images" > images.txt
 
       # Step 4: Tag and Push Images
       - name: Tag and Push Images
-        run: ./tag_and_push_images.sh
-
+        run: |
+          while IFS= read -r image; do
+            docker tag "gcr.io/goldengate-1/$image" "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr/$image"
+            docker push "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr/$image"
+          done < images.txt

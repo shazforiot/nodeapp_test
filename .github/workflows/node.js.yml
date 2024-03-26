@@ -17,8 +17,8 @@ jobs:
           service_account_key: ${{ secrets.GCR_SA_KEY }}
           export-access-token: true
 
-      # Step 3: Push all images to Artifact Registry
-      - name: Push all images to Artifact Registry
+      # Step 2: Pull and Push all images to Artifact Registry
+      - name: Pull and Push all images to Artifact Registry
         run: |
           #!/bin/bash
     
@@ -41,6 +41,28 @@ jobs:
     
           # Iterate through each image
           for IMAGE in $IMAGES; do
+              # Pull the image with the "latest" tag from GCR
+              docker pull "$IMAGE:latest"
+              if [ $? -ne 0 ]; then
+                echo "Failed to pull image $IMAGE:latest"
+                exit 1
+              fi
+
+              # Tag the image with Artifact Registry details
+              ARTIFACT_TARGET="us-central1-docker.pkg.dev/$ARTIFACT_PROJECT_ID/$ARTIFACT_REPO_NAME/$IMAGE:latest"
+              docker tag "$IMAGE:latest" "$ARTIFACT_TARGET"
+              if [ $? -ne 0 ]; then
+                echo "Failed to tag image $IMAGE:latest with $ARTIFACT_TARGET"
+                exit 1
+              fi
+
+              # Push the image to Artifact Registry
+              docker push "$ARTIFACT_TARGET"
+              if [ $? -ne 0 ]; then
+                echo "Failed to push image $ARTIFACT_TARGET"
+                exit 1
+              fi
+
               # Get a list of tags for the current image (excluding "latest") from GCR
               TAGS=$(gcloud container images list-tags $IMAGE --project=$GCR_PROJECT_ID --format='get(tags)' | grep -v latest || true)
         
@@ -48,9 +70,19 @@ jobs:
               for TAG in $TAGS; do
                   # Pull the image with the current tag from GCR
                   docker pull "$IMAGE:$TAG"
+                  if [ $? -ne 0 ]; then
+                    echo "Failed to pull image $IMAGE:$TAG"
+                    exit 1
+                  fi
+
                   # Tag the image with Artifact Registry details
                   ARTIFACT_TARGET="us-central1-docker.pkg.dev/$ARTIFACT_PROJECT_ID/$ARTIFACT_REPO_NAME/$IMAGE:$TAG"
                   docker tag "$IMAGE:$TAG" "$ARTIFACT_TARGET"
+                  if [ $? -ne 0 ]; then
+                    echo "Failed to tag image $IMAGE:$TAG with $ARTIFACT_TARGET"
+                    exit 1
+                  fi
+
                   # Push the image to Artifact Registry
                   docker push "$ARTIFACT_TARGET"
                   if [ $? -ne 0 ]; then
@@ -58,16 +90,4 @@ jobs:
                     exit 1
                   fi
               done
-
-              # Pull the image with the "latest" tag from GCR
-              docker pull "$IMAGE:latest"
-              # Tag the image with Artifact Registry details
-              ARTIFACT_TARGET="us-central1-docker.pkg.dev/$ARTIFACT_PROJECT_ID/$ARTIFACT_REPO_NAME/$IMAGE:latest"
-              docker tag "$IMAGE:latest" "$ARTIFACT_TARGET"
-              # Push the image to Artifact Registry
-              docker push "$ARTIFACT_TARGET"
-              if [ $? -ne 0 ]; then
-                echo "Failed to push image $ARTIFACT_TARGET"
-                exit 1
-              fi
           done

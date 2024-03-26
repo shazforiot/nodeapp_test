@@ -17,8 +17,8 @@ jobs:
           service_account_key: ${{ secrets.GCR_SA_KEY }}
           export-access-token: true
 
-      # Step 2: Run the migration script
-      - name: Migrate images
+      # Step 2: Pull all images from GCR
+      - name: Pull all images from GCR
         run: |
           #!/bin/bash
 
@@ -30,20 +30,6 @@ jobs:
 
           # Iterate through each image
           for IMAGE in $IMAGES; do
-              # Pull the image with the "latest" tag
-              docker pull "$IMAGE:latest"
-
-              # Get a list of tags for the current image (excluding "latest")
-              TAGS=$(gcloud container images list-tags "$IMAGE" --project="$PROJECT_ID" --format='get(tags)' | grep -v latest || true)
-
-              # Check if there are tags other than "latest"
-              if [ -n "$TAGS" ]; then
-                  # Iterate through each tag of the image
-                  for TAG in $TAGS; do
-                      # Pull the image with the current tag
-                      docker pull "$IMAGE:$TAG"
-                  done
-              else
-                  echo "No tags other than 'latest' found for image $IMAGE"
-              fi
+              # Pull all tags of the image
+              docker pull "$IMAGE"
           done

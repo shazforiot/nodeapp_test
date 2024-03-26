@@ -1,6 +1,5 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Build and Deploy
 
 on:
@@ -39,18 +38,26 @@ jobs:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-  migrate-images:
-    runs-on: self-hosted
-
-    steps:
-    - name: Authenticate with Google Cloud
-      uses: google-github-actions/setup-gcloud@v0.2.0
-      with:
-        credentials_json: ${{ secrets.GCP_SA_KEY }}
-        project_id: ${{ secrets.GCP_PROJECT_ID }}
-
-    - name: Tag and Push images to Artifact Registry
+    - name: Pull, Tag, and Push Images
       run: |
+        # Define a list of image names
+        images=("gcr.io/goldengate-1/node:latest" "gcr.io/goldengate-1/test-jenkins:32latest")
+
+        # Authenticate with the destination registry
         gcloud auth configure-docker
-        gcloud container images list --format='value(name)' --repository="gcr.io/${{ secrets.GCP_PROJECT_ID }}" | \
-          xargs -I{} gcloud container images add-tag "gcr.io/${{ secrets.GCP_PROJECT_ID }}/{}/latest" "us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/testhost-gcr/{}:latest"
+
+        # Loop through each image in the list
+        for image in "${images[@]}"; do
+          # Pull the image
+          docker pull "$image"
+
+          # Extract the image name and tag
+          image_name=$(echo "$image" | cut -d':' -f1)
+          image_tag=$(echo "$image" | cut -d':' -f2)
+
+          # Tag the image for the destination registry
+          docker tag "$image_name:$image_tag" "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr/$(basename "$image_name"):$image_tag"
+
+          # Push the image to the destination registry
+          docker push "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr/$(basename "$image_name"):$image_tag"
+        done

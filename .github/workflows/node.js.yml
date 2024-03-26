@@ -38,6 +38,7 @@ jobs:
         run: |
           while IFS= read -r image; do
             echo "Processing image: $image"
+            gcloud container images describe "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" || exit 1
             docker pull "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" || exit 1
             docker tag "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image" || exit 1
             docker push "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image" || exit 1

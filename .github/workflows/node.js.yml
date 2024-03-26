@@ -38,16 +38,19 @@ jobs:
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
-        
+
+  migrate-images:
+    runs-on: self-hosted
+
+    steps:
     - name: Authenticate with Google Cloud
       uses: google-github-actions/setup-gcloud@v0.2.0
       with:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
-    - name: Migrate images from GCR to Artifact Registry
+    - name: Tag and Push images to Artifact Registry
       run: |
         gcloud auth configure-docker
         gcloud container images list --format='value(name)' --repository="gcr.io/${{ secrets.GCP_PROJECT_ID }}" | \
-          xargs -L1 -I{} gcloud container images add-tag "gcr.io/${{ secrets.GCP_PROJECT_ID }}/{}/latest" "us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/testhost-gcr/{}:latest"
-
+          xargs -I{} gcloud container images add-tag "gcr.io/${{ secrets.GCP_PROJECT_ID }}/{}/latest" "us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/testhost-gcr/{}:latest"

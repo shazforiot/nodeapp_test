@@ -16,9 +16,8 @@ jobs:
       - name: Configure Docker CLI for GCR
         uses: google-github-actions/setup-gcloud@v0.2.0
         with:
-          docker-config: gcr
-          project-id: ${{ secrets.GCR_PROJECT_ID }}
           service-account-key: ${{ secrets.GCR_SA_KEY }}
+          export-access-token: true
       
       # Step 2: Authenticate with Artifact Registry
       - name: Configure Docker CLI for Artifact Registry
@@ -27,20 +26,20 @@ jobs:
           docker-config: artifact
           project-id: ${{ secrets.ARTIFACT_PROJECT_ID }}
           service-account-key: ${{ secrets.ARTIFACT_SA_KEY }}
+          export-access-token: true
       
       # Step 3: List images from GCR
       - name: List images from GCR
         id: list_images
         run: |
-          echo "::set-output name=images::$(gcloud container images list --format='value(name)')"
+          gcloud container images list --format='value(name)' > images.txt
+          cat images.txt
       
       # Step 4: Migrate each image to Artifact Registry
       - name: Migrate images to Artifact Registry
         run: |
-          images=(${{ steps.list_images.outputs.images }})
-          for image in "${images[@]}"; do
+          while IFS= read -r image; do
             docker pull "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image"
             docker tag "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image"
             docker push "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image"
-          done
-
+          done < images.txt

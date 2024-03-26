@@ -41,7 +41,7 @@ jobs:
     - name: Pull, Tag, and Push Images
       run: |
         # Define a list of image names
-        images=("gcr.io/goldengate-1/node:latest" "gcr.io/goldengate-1/test-jenkins:32latest")
+        images=("gcr.io/goldengate-1/node:latest" "gcr.io/goldengate-1/test-jenkins:32")
 
         # Authenticate with the destination registry
         gcloud auth configure-docker

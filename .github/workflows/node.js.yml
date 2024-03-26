@@ -38,12 +38,48 @@ jobs:
                   docker pull "$IMAGE:$TAG"
               done
           done
-      
-      # Step 3: Push images to Artifact Registry
-      - name: Push images to Artifact Registry
+
+      # Step 3: Push all images to Artifact Registry
+      - name: Push all images to Artifact Registry
         run: |
-          REPOSITORY="testhost-gcr"
-          docker tag us-central1-docker.pkg.dev/goldengate-1/testhost-gcr
+          #!/bin/bash
+    
+          # Set the GCR project ID
+          GCR_PROJECT_ID="goldengate-1"  # Replace "goldengate-1" with your actual GCR project ID
+          # Set the Artifact Registry project ID
+          ARTIFACT_PROJECT_ID="goldengate-1"  # Replace "your-artifact-project-id" with your actual Artifact Registry project ID
+          # Set the Artifact Registry repository name
+          ARTIFACT_REPO_NAME="testhost-gcr"  # Replace "your-artifact-repository" with your actual Artifact Registry repository name
+    
+          # Authenticate with Docker to Artifact Registry
+          gcloud auth configure-docker -q
+    
+          # Get a list of all images in the GCR project
+          IMAGES=$(gcloud container images list --project=$GCR_PROJECT_ID --format='value(name)')
+    
+          # Iterate through each image
           for IMAGE in $IMAGES; do
-              docker us-central1-docker.pkg.dev/goldengate-1/testhost-gcr
+              # Pull the image with the "latest" tag from GCR
+              docker pull "$IMAGE:latest"
+              # Tag the image with Artifact Registry details
+              ARTIFACT_TAG="gcr.io/$GCR_PROJECT_ID/$IMAGE:latest"
+              ARTIFACT_TARGET="gcr.io/$ARTIFACT_PROJECT_ID/$ARTIFACT_REPO_NAME/$IMAGE:latest"
+              docker tag "$ARTIFACT_TAG" "$ARTIFACT_TARGET"
+              # Push the image to Artifact Registry
+              docker push "$ARTIFACT_TARGET"
+        
+              # Get a list of tags for the current image (excluding "latest") from GCR
+              TAGS=$(gcloud container images list-tags $IMAGE --project=$GCR_PROJECT_ID --format='get(tags)' | grep -v latest || true)
+        
+              # Iterate through each tag of the image
+              for TAG in $TAGS; do
+                  # Pull the image with the current tag from GCR
+                  docker pull "$IMAGE:$TAG"
+                  # Tag the image with Artifact Registry details
+                  ARTIFACT_TAG="gcr.io/$GCR_PROJECT_ID/$IMAGE:$TAG"
+                  ARTIFACT_TARGET="gcr.io/$ARTIFACT_PROJECT_ID/$ARTIFACT_REPO_NAME/$IMAGE:$TAG"
+                  docker tag "$ARTIFACT_TAG" "$ARTIFACT_TARGET"
+                  # Push the image to Artifact Registry
+                  docker push "$ARTIFACT_TARGET"
+              done
           done

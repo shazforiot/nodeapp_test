@@ -5,17 +5,20 @@ metadata:
   labels:
     app: nodeapp
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: nodeapp
   template:
     metadata:
       labels:
-        app: nodeapp 
+        app: nodeapp
     spec:
       containers:
       - name: nodeserver
-        image: thetips4you/nodeapp:latest
+        image: us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest
         ports:
         - containerPort: 3000
+        imagePullPolicy: Always  # Always pull the latest image
+  strategy:
+    type: RollingUpdate

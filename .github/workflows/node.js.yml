@@ -1,0 +1,35 @@
+name: Migrate All Images to Artifact Registry
+
+on:
+  push:
+    branches:
+      - main  # Adjust branch name as needed
+
+jobs:
+  migrate:
+    runs-on: self-hosted
+
+    steps:
+      # Step 1: Authenticate with GCR
+      - name: Configure Docker CLI for GCR
+        uses: google-github-actions/setup-gcloud@v0.2.0
+        with:
+          service_account_key: ${{ secrets.GCR_SA_KEY }}
+          export-access-token: true
+
+      # Step 2: Pull all images from GCR
+      - name: Pull all images from GCR
+        run: |
+          #!/bin/bash
+
+          # Set the GCR project ID
+          PROJECT_ID="goldengate-1"
+
+          # Get a list of all images in the project
+          IMAGES=$(gcloud container images list --project="$PROJECT_ID" --format='value(name)')
+
+          # Iterate through each image
+          for IMAGE in $IMAGES; do
+              # Pull all tags of the image
+              docker pull "$IMAGE"
+          done

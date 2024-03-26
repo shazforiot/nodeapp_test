@@ -1,0 +1,44 @@
+---
+- name: Git Checkout, Docker Install, Build Image, Push to Artifact Registry, and Deploy to GKE
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Ensure git is installed
+      become: true
+      apt:
+        name: git
+        state: present
+
+    - name: Ensure Docker dependencies are installed
+      become: true
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - containerd
+        - docker.io
+
+    - name: Clone Node.js code from GitHub
+      git:
+        repo: https://github.com/mnagaraju5628/Testproject-INNO.git
+        dest: /home/ubuntu/actions-runner/Testproject-INNO
+        version: main
+      become: true
+      
+    - name: Build Docker image
+      command: "docker build -t us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest /home/ubuntu/actions-runner/Testproject-INNO"
+      become: true
+
+    - name: Push Docker image to artifact registry
+      command: "docker push us-central1-docker.pkg.dev/goldengate-1/test-project/node:latest"
+      become: true
+
+    - name: Deploy to GKE
+      become: true
+      shell: |
+        cd /home/ubuntu/actions-runner/Testproject-INNO/
+        gcloud container clusters get-credentials innotest-cluster --region us-central1-c
+        kubectl rollout restart deployment nodeapp-deployment 
+        kubectl apply -f deployment.yaml
+        kubectl apply -f service.yaml

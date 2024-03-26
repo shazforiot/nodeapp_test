@@ -16,22 +16,26 @@ jobs:
         with:
           service-account-key: ${{ secrets.GCR_SA_KEY }}
           export-access-token: true
-      
-      # Step 2: Authenticate with Artifact Registry
-      - name: Configure Docker CLI for Artifact Registry
-        uses: google-github-actions/setup-gcloud@v0.2.0
-        with:
-          docker-config: artifact
-          project-id: ${{ secrets.ARTIFACT_PROJECT_ID }}
-          service-account-key: ${{ secrets.ARTIFACT_SA_KEY }}
-          export-access-token: true
-      
-      # Step 3: List images from GCR and migrate each image
-      - name: Migrate images to Artifact Registry
+
+      # Step 2: Run script to pull all images from GCR
+      - name: Pull all images from GCR
         run: |
-          while IFS= read -r image; do
-            echo "Processing image: $image"
-            docker pull "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" || exit 1
-            docker tag "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr" || exit 1
-            docker push "us-central1-docker.pkg.dev/goldengate-1/testhost-gcr" || exit 1
-          done < images.txt
+          #!/bin/bash
+
+          # Set the GCR project ID
+          PROJECT_ID="goldengate-1"
+
+          # Get a list of all images in the project
+          IMAGES=$(gcloud container images list --project=$PROJECT_ID --format='value(name)')
+
+          # Iterate through each image
+          for IMAGE in $IMAGES; do
+              # Get a list of tags for the current image
+              TAGS=$(gcloud container images list-tags $IMAGE --project=$PROJECT_ID --format='get(tags)')
+              
+              # Iterate through each tag of the image
+              for TAG in $TAGS; do
+                  # Pull the image with the current tag
+                  docker pull $IMAGE:$TAG
+              done
+          done

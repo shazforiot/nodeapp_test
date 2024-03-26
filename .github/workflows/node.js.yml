@@ -1,5 +1,3 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 name: Migrate All Images to Artifact Registry
 
 on:
@@ -39,7 +37,7 @@ jobs:
       - name: Migrate images to Artifact Registry
         run: |
           while IFS= read -r image; do
-            docker pull "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image"
-            docker tag "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image"
-            docker push "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image"
+            docker pull "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" || exit 1
+            docker tag "gcr.io/${{ secrets.GCR_PROJECT_ID }}/$image" "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image" || exit 1
+            docker push "us-central1-docker.pkg.dev/${{ secrets.ARTIFACT_PROJECT_ID }}/$image" || exit 1
           done < images.txt

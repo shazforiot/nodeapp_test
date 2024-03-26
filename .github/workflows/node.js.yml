@@ -14,7 +14,7 @@ jobs:
       - name: Configure Docker CLI for GCR
         uses: google-github-actions/setup-gcloud@v0.2.0
         with:
-          service-account-key: ${{ secrets.GCR_SA_KEY }}
+          service_account_key: ${{ secrets.GCR_SA_KEY }}
           export-access-token: true
 
       # Step 2: Run script to pull all images from GCR
@@ -43,10 +43,11 @@ jobs:
       - name: Configure Docker CLI for Artifact Registry
         uses: google-github-actions/setup-gcloud@v0.2.0
         with:
-          docker-config: artifact
-          project-id: ${{ secrets.ARTIFACT_PROJECT_ID }}
-          service-account-key: ${{ secrets.ARTIFACT_SA_KEY }}
-          export-access-token: true
+          version: latest
+          service_account_key: ${{ secrets.ARTIFACT_SA_KEY }}
+          project_id: ${{ secrets.ARTIFACT_PROJECT_ID }}
+        env:
+          CLOUDSDK_METRICS_ENVIRONMENT: github-actions-setup-gcloud
 
       # Step 4: Tag and push all pulled images to Artifact Registry
       - name: Tag and push images to Artifact Registry
